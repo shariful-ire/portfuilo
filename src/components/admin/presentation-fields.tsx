@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { Input, fieldStyles } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -7,7 +8,7 @@ import { Button } from "../ui/button";
 import { type Presentation } from "@/lib/settings/presentation";
 import type { MediaItem } from "@/lib/media/list";
 
-export function PresentationFields({ value, onChange, media }: { value: string; onChange: (value: string) => void; media: MediaItem[] }) {
+export function PresentationFields({ value, onChange, media, renderUpload }: { value: string; onChange: (value: string) => void; media: MediaItem[]; renderUpload: (key: "logoId" | "darkLogoId" | "lightLogoId" | "faviconId", label: string) => ReactNode }) {
   const data: Presentation = JSON.parse(value);
   const set = (patch: Partial<Presentation>) => onChange(JSON.stringify({ ...data, ...patch }));
   const pageChange = (index: number, patch: Partial<Presentation["pages"][number]>) => set({ pages: data.pages.map((page, i) => i === index ? { ...page, ...patch } : page) });
@@ -15,10 +16,10 @@ export function PresentationFields({ value, onChange, media }: { value: string; 
     <fieldset className="space-y-5 rounded-2xl border border-border p-5"><legend className="px-2 text-xl font-semibold">Branding</legend>
       <label className="block">Site name<Input value={data.siteName} maxLength={100} onChange={(e) => set({ siteName: e.target.value })} /></label>
       <label className="block">Logo alt text<Input value={data.logoAlt} maxLength={300} onChange={(e) => set({ logoAlt: e.target.value })} /></label>
-      <p className="text-sm text-muted">Upload assets using the media manager above, then select them here. Dark theme uses the dark logo, then the primary logo. Favicon: square PNG, 32/48/96/180/192/512 pixels.</p>
+      <p className="text-sm text-muted">Upload each asset below or choose an existing image. Dark theme uses the dark logo, then the primary logo. Favicon: square PNG, 32/48/96/180/192/512 pixels.</p>
       <div className="grid gap-5 sm:grid-cols-2">{([['logoId', 'Primary logo'], ['darkLogoId', 'Dark logo'], ['lightLogoId', 'Light logo (optional)'], ['faviconId', 'Favicon']] as const).map(([key, label]) => {
         const asset = media.find((item) => item.id === data[key]);
-        return <div key={key}><label htmlFor={key}>{label}</label><select id={key} className={fieldStyles} value={data[key]} onChange={(e) => set({ [key]: e.target.value })}><option value="">None</option>{data[key] && !asset && <option value={data[key]}>Current asset unavailable</option>}{media.filter((item) => item.kind === "image" && item.state === "ready").map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select>{asset?.url && <div className={`mt-3 rounded-xl p-4 ${key === "lightLogoId" ? "bg-white" : "bg-background"}`}><Image src={asset.url} alt={data.logoAlt || "Selected asset preview"} width={160} height={80} className="h-20 w-40 object-contain" /></div>}</div>;
+        return <div key={key} className="min-w-0 space-y-3">{renderUpload(key, label)}<label htmlFor={key}>{label}</label><select id={key} className={fieldStyles} value={data[key]} onChange={(e) => set({ [key]: e.target.value })}><option value="">None</option>{data[key] && !asset && <option value={data[key]}>Current asset unavailable</option>}{media.filter((item) => item.kind === "image" && item.state === "ready").map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select>{asset?.url && <div className={`mt-3 rounded-xl p-4 ${key === "lightLogoId" ? "bg-white" : "bg-background"}`}><Image src={asset.url} alt={data.logoAlt || "Selected asset preview"} width={160} height={80} className="h-20 w-40 object-contain" /></div>}</div>;
       })}</div>
     </fieldset>
     <fieldset className="space-y-5 rounded-2xl border border-border p-5"><legend className="px-2 text-xl font-semibold">Appearance &amp; Motion</legend>

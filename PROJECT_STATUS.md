@@ -568,3 +568,31 @@ No new credentials or environment variables are required. Existing MongoDB, Goog
 Actual Google admin and second-account browser login, authenticated dashboard editing/inbox/review actions, and real Cloudinary upload/replacement were not performed. Unit authorization tests and anonymous HTTP rejection passed; fixture persistence/publication tests are not a claim of an OAuth/upload end-to-end flow. A temporary MongoDB connectivity interruption occurred; read-only diagnostic and subsequent full live regressions recovered and passed. Existing development dependency advisory notes remain as previously documented; dependencies were not changed in this enhancement.
 
 README documents the new settings, Messages and Ideas workflows and repeatable verification commands. Next action: owner signs in locally to exercise the authenticated UI and uploads genuine branding/profile assets; deploy only when explicitly requested.
+
+## Certificate upload discoverability fix (2026-10-10)
+
+- Certificate Add/Edit now begins with distinct image and optional PDF upload panels, explicit file chooser/upload labels, scoped file types, unique accessible control IDs, preview/progress/error states and configuration guidance.
+- Editor focus now stays at its heading instead of jumping past the uploader to the title field.
+- After the authenticated upload succeeds and ready metadata is confirmed, the certificate automatically selects that image/PDF; image alt text is copied. Saving is blocked while uploads are active. Existing asset selections and replacement/deletion protections remain intact; no authentication, storage or public visibility architecture changed.
+- Shared media uploader remains compatible with settings, projects, posts and homepage sections. README includes the certificate upload/save workflow.
+- Checks: lint, standalone typecheck, 98 existing regression tests and final production build passed. Test workers required a sandbox escalation after EPERM; the permitted rerun passed.
+- Configuration: existing MongoDB, Google admin and Cloudinary server environment variables only. Actual authenticated browser upload/save/publish with a real certificate was not performed; no provider success is simulated or claimed.
+- Next: sign in, open Dashboard > Certificates > Add certificate, upload the real image and optional PDF, complete details, save and publish. No deployment performed.
+
+## Certificate screenshot follow-up (2026-10-10)
+
+- Moved the existing secure image/PDF upload controls directly into their corresponding certificate fields, beneath title/issuer and immediately before each saved-asset dropdown. No separate uploader above the form to overlook.
+- Dropdown labels now explicitly say they select already uploaded assets; the empty image option directs the owner to the uploader above. Automatic selection, alt copying, busy locking and server authorization remain unchanged. Upload buttons explicitly default to type=button, so they do not submit the surrounding certificate form.
+- README workflow updated. Lint, standalone TypeScript check and production build passed. This is a layout-only follow-up; real authenticated Cloudinary upload remains unverified. No deployment or environment changes.
+- Next: reload the local certificate editor and upload a real certificate; hosted installations need the updated code deployed by the owner.
+
+## All-section upload audit (2026-10-10)
+
+- Reviewed upload consumers: certificates, project thumbnails/gallery, post covers, profile/CV/sharing images, primary/dark/light logos/favicon and homepage image-and-text/gallery. Skills/timeline/text sections have no image fields by design.
+- Added contextual uploads and automatic field selection for project/post/settings/branding; project and homepage galleries append the confirmed image and alt text. Homepage uploader appears only for image-bearing section types. Fixed project/post editor focus skipping uploads.
+- Fixed shared uploader success depending on a second library GET: validate the successful authenticated PUT metadata and merge into the full library directly. Image uploads preserve PDFs and vice versa. Removed duplicate refresh requests; manual refresh now locks editing to prevent stale selection races. Added operation guard and aborted-upload feedback. Generic labels/messages now work across every consumer.
+- Two regression tests verify upload identity/type/state/URL validation and preservation of other library assets; all 100 tests passed. Lint, standalone typecheck, final production build and client secret scan passed (34 files/eight configured sensitive values). MongoDB read-only connection check passed.
+- Actual Cloudinary provider checks with temporary fixtures: PNG upload PASS, public delivery HTTP 200; PDF upload PASS, public delivery HTTP 401. Both generated assets were deleted successfully. No owner content or database records changed by this provider check.
+- External action still needed: Cloudinary Settings > Security > Allow delivery of PDF and ZIP files; retest PDF delivery afterward. Documentation: https://cloudinary.com/documentation/pdf_optimization. Added troubleshooting guidance in PDF upload UI and README. Account console setting was not changed by this audit.
+- Verification limits: provider checks do not exercise Google-authenticated dashboard HTTP upload/save/publish end-to-end, nor verify Vercel hosting limits. No claim that every browser workflow is verified or that unrelated application bugs cannot remain. No deployment performed.
+- Next: enable/retest PDF delivery, sign in to verify real content upload/save/publish, then deploy updated code only when requested.

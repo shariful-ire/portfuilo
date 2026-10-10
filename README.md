@@ -207,6 +207,8 @@ Tests cover upload bounds/type sniffing, single-use ticket validation, forbidden
 
 Open `/dashboard/certificates` as the verified admin. Add a certificate, upload/select an image using the existing upload manager, optionally upload/select a PDF, fill the details, and save as a draft or publish immediately. The editor includes title, issuer, certificate-specific image alt text, full issue date, optional credential ID/verification URL, plain-text description, category, display order, and publication status. No sample certificates are seeded.
 
+Open **Dashboard → Certificates → Add certificate** (or **Edit / preview**). Below Title and Issuing organization, the image and optional PDF fields each contain their own file chooser and upload button, immediately above the existing-upload dropdown. Choose an image, enter its accessibility description, then press **Upload image**; use **Upload PDF** for the optional document. Successful uploads automatically select the saved asset and copy the image description into certificate alt text. Complete the remaining fields and press **Save certificate**; choose Published to make it public. Existing uploads remain available in the selection dropdowns. Missing Cloudinary configuration displays guidance and disables uploading.
+
 Use **Edit / preview** to change a saved record or preview unsaved details. Publish/unpublish are explicit list actions. The native full-size preview dialog supports keyboard navigation, Escape, a Close button, and focus restoration. Up/Down reorder buttons work with Tab and Enter/Space, announce results, and return focus to the moved row. Reordering normalizes display-order values to a consecutive sequence; a numeric display-order field is also available. Deletes require confirmation and remove only the certificate, retaining uploaded assets for explicit media cleanup.
 
 All mutation routes authorize through `requireAdmin()` and the existing Origin/body guard before processing input:
@@ -421,3 +423,12 @@ No new environment variables are needed. Keep existing MongoDB, Google admin aut
 Verification commands: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run check:client-secrets`, `npm run db:verify`. After building, `node --conditions=react-server --import tsx scripts/verify-presentation.ts` additionally verifies settings/page visibility, a real idea HTTP save/replay, public-summary privacy/unpublish and rejected anonymous/spoofed admin endpoints in a disposable database/local server. It requires temporary database create/drop privileges. Test fixtures are removed and never added to the owner's portfolio.
 
 Actual Google admin/second-account sign-in and authenticated browser upload/replacement/branding-review/inbox operations still need an interactive check with the configured accounts. Automated policy tests, fixture publication and HTTP rejection tests do not claim a completed OAuth or Cloudinary upload flow. No public deployment was performed.
+
+
+### Upload audit and PDF delivery
+
+Certificate image/PDF, project thumbnail/gallery, post cover, profile photo/CV/sharing image and branding controls provide dedicated uploads. Successful uploads select the associated field; project and homepage gallery uploads append an image with its alt text. Homepage image-and-text uploads select its image. Text-only section types do not require uploads. Existing media can still be selected without reuploading.
+
+The shared uploader confirms the authenticated PUT response and updates the library directly. A later media-list request is no longer required to acknowledge a successful upload. Manual refresh locks editing while in progress. Images and PDFs remain separate selectable types; other media are preserved when uploading either type.
+
+Live provider verification on 2026-10-10: temporary PNG upload/public delivery passed (HTTP 200), PDF upload passed but public PDF delivery returned HTTP 401. Both test assets were deleted. In Cloudinary Console, open Settings > Security and enable **Allow delivery of PDF and ZIP files**, then retest a PDF link. See [Cloudinary PDF delivery documentation](https://cloudinary.com/documentation/pdf_optimization). Provider checks do not verify the Google-authenticated dashboard save/publish flow or Vercel deployment limits.
