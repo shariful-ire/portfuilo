@@ -393,3 +393,31 @@ The supplied Google client secret was shared in chat; rotate it in Google Cloud 
 ### Cloudinary configuration status - 2026-10-10
 
 Cloudinary credentials are now configured in the private local and Vercel import env files; the authenticated read-only provider ping succeeded. Earlier missing-credential notes are superseded. Restart the local server after env changes. Import the updated production values into Vercel and redeploy to apply them. Real dashboard image/PDF upload and publication still require an authenticated browser check. Keep env files private and rotate credentials shared in chat before production use.
+
+
+### Portfolio management enhancements
+
+Settings now include career-focus cards, branding assets, navigation/page configuration and appearance. Upload images through the existing media manager, then select logos/favicon and save settings. Favicon accepts square PNG at 32, 48, 96, 180, 192 or 512 pixels. Dark logo takes priority over primary logo; the optional light logo is stored and previewed. Media still in use cannot be deleted.
+
+Supported optional pages are Projects, Certificates, Posts and a structured About page (disabled by default). Disable removes navigation/sitemap/homepage collection links and renders the not-found screen with noindex for direct URLs. Next streamed not-found responses may carry HTTP 200; see https://nextjs.org/docs/app/api-reference/file-conventions/not-found. Informational blocks render plain text, never executable HTML. Essential auth/dashboard routes are not configurable.
+
+Appearance supports cyan, sky or mint, editable hero roles and a decorative-motion switch. Visitor reduced-motion preference overrides animations. Role rotation can also be paused by the visitor. Existing content and custom profile wording are retained. The optional exact-default wording migration is `node --conditions=react-server --import tsx scripts/update-career-positioning.ts`.
+
+After a production build, `node --conditions=react-server --import tsx scripts/verify-presentation.ts` verifies settings in an isolated temporary database and local port 3139, then cleans up. It requires database create/drop privileges and does not verify real OAuth login or uploads.
+
+
+### Messages and Ideas & Research
+
+- Dashboard -> Messages uses the existing contactMessages collection. Search sender/email/subject/body, filter read/unread, open details, mark state and delete with confirmation. The navigation badge is the real unread count. Counts that cannot be read are not replaced by a fake zero.
+- Public /ideas accepts text-only collaboration proposals. Storage/contact consent is required; publication and contributor attribution are separate optional consent choices. Nothing is published by submission. No visitor upload, automatic email or live chat is provided.
+- Dashboard -> Ideas & Research provides search, category/review/publication filters, pagination, full private details, status, notes, deletion and an email reply link. Reply opens your mail application; it does not send an email from this site.
+- To publish: the submitter must have consented; write a separate public title and summary, preview, explicitly check approval, then Publish summary and confirm. Editing public text resets approval and stages a draft when saved. Unpublish removes the public summary; delete removes both the submission and its summary. Attribution requires its own sender consent. Review payloads cannot change consent, sender identity or raw submission text.
+- Public queries project only approved, published, consented summary fields and check the same flags again after reading. Sender email, raw submission and admin notes are excluded. Email addresses are rejected in public summary fields. Public summaries are plain escaped text, not executable HTML.
+- Ideas share the existing signed expiring form token, minimum-age check, honeypot and persistent MongoDB rate limits. Tokens cannot be replayed across contact/idea submissions because both use the transactional receipt collection. Ideas also have a per-email submission limit. Success is returned only after a committed save. Database failure remains a visible failure.
+- Navigation & Pages includes Ideas & Research; disabling it hides the page/navigation entry and rejects new idea submissions. The optional informational About page supports structured text blocks. No setting can disable login or dashboard routes.
+
+No new environment variables are needed. Keep existing MongoDB, Google admin auth, contact protection and Cloudinary settings. Run `npm run db:indexes` after updating; the new idea review/publication indexes were also verified against the configured database during implementation. Private environment files must stay out of source control.
+
+Verification commands: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run check:client-secrets`, `npm run db:verify`. After building, `node --conditions=react-server --import tsx scripts/verify-presentation.ts` additionally verifies settings/page visibility, a real idea HTTP save/replay, public-summary privacy/unpublish and rejected anonymous/spoofed admin endpoints in a disposable database/local server. It requires temporary database create/drop privileges. Test fixtures are removed and never added to the owner's portfolio.
+
+Actual Google admin/second-account sign-in and authenticated browser upload/replacement/branding-review/inbox operations still need an interactive check with the configured accounts. Automated policy tests, fixture publication and HTTP rejection tests do not claim a completed OAuth or Cloudinary upload flow. No public deployment was performed.

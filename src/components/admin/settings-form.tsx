@@ -6,11 +6,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { settingsInputSchema, type SettingsInput } from "@/lib/settings/schema";
 import type { MediaItem } from "@/lib/media/list";
+import { PresentationFields } from "./presentation-fields";
 import { MediaManager } from "./media-manager";
 
 const fields: { key: keyof SettingsInput; label: string; multiline?: boolean; required?: boolean }[] = [
   { key: "name", label: "Full name", required: true }, { key: "shortName", label: "Short name", required: true },
   { key: "headline", label: "Headline", required: true }, { key: "introduction", label: "Introduction", multiline: true, required: true }, { key: "biography", label: "Biography", multiline: true },
+  { key: "webFocusTitle", label: "Web focus title (empty hides card)" }, { key: "webFocusDescription", label: "Web focus description", multiline: true },
+  { key: "hardwareFocusTitle", label: "IoT / robotics focus title (empty hides card)" }, { key: "hardwareFocusDescription", label: "IoT / robotics focus description", multiline: true },
   { key: "university", label: "University" }, { key: "degree", label: "Degree wording" }, { key: "department", label: "Department wording" },
   { key: "city", label: "City" }, { key: "country", label: "Country" }, { key: "publicEmail", label: "Public contact email" },
   { key: "whatsapp", label: "WhatsApp number (+country code)" }, { key: "telegram", label: "Telegram username (@ optional)" },
@@ -40,7 +43,8 @@ export function SettingsForm({ initial, initialMedia, cloudinaryConfigured }: { 
   }}>
     <h2 className="text-xl font-semibold">Profile and site settings</h2><p className="text-sm leading-6 text-muted">Saving publishes these settings. Empty optional fields are hidden publicly. Administrator access is configured separately on the server.</p>
     <fieldset disabled={saving || mediaBusy} className="grid gap-6 sm:grid-cols-2">
-      {fields.map(({ key, label, multiline, required }) => <div key={key} className={multiline ? "sm:col-span-2" : ""}><label htmlFor={key} className="mb-2 block text-sm">{label}{required ? " *" : ""}</label>{multiline ? <Textarea id={key} name={key} required={required} value={data[key]} onChange={(event) => setData({ ...data, [key]: event.target.value })} /> : <Input id={key} name={key} required={required} value={data[key]} onChange={(event) => setData({ ...data, [key]: event.target.value })} />}</div>)}
+      <PresentationFields value={data.presentationJson} onChange={(presentationJson) => setData({ ...data, presentationJson })} media={media} />
+      {(["Profile", "Contact & Social Links", "Site metadata"] as const).map((group) => <fieldset key={group} className="grid gap-6 rounded-2xl border border-border p-5 sm:col-span-2 sm:grid-cols-2"><legend className="px-2 text-xl font-semibold">{group}</legend>{fields.filter(({ key }) => group === "Contact & Social Links" ? ["publicEmail", "whatsapp", "telegram", "github", "linkedin"].includes(key) : group === "Site metadata" ? ["siteTitle", "siteDescription"].includes(key) : !["publicEmail", "whatsapp", "telegram", "github", "linkedin", "siteTitle", "siteDescription"].includes(key)).map(({ key, label, multiline, required }) => <div key={key} className={multiline ? "sm:col-span-2" : ""}><label htmlFor={key} className="mb-2 block text-sm">{label}{required ? " *" : ""}</label>{multiline ? <Textarea id={key} name={key} required={required} value={data[key]} onChange={(event) => setData({ ...data, [key]: event.target.value })} /> : <Input id={key} name={key} required={required} value={data[key]} onChange={(event) => setData({ ...data, [key]: event.target.value })} />}</div>)}</fieldset>)}
       {([{ key: "photoMediaId", label: "Profile image", kind: "image" }, { key: "cvMediaId", label: "CV PDF", kind: "document" }, { key: "sharingMediaId", label: "Social sharing image", kind: "image" }] as const).map(({ key, label, kind }) => <div key={key}><label htmlFor={key} className="mb-2 block text-sm">{label}</label><select id={key} value={data[key]} className={fieldStyles} onChange={(event) => setData({ ...data, [key]: event.target.value })}><option value="">None (hide publicly)</option>{data[key] && !media.some((item) => item.id === data[key] && item.state === "ready") && <option value={data[key]}>Current selection unavailable — choose another</option>}{media.filter((item) => item.state === "ready" && item.kind === kind).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>)}
     </fieldset>
     {error && <p role="alert" className="text-sm text-red-300">{error}</p>}{message && <p role="status" className="text-sm text-accent">{message}</p>}

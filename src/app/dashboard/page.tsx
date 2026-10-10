@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireAdminPage } from "@/lib/auth/page-access";
 import { Card } from "@/components/ui/card";
 const actions = [
+ ["ideas", "Review ideas & research", "Review private proposals and manage consented collaboration summaries."],
  ["projects", "Add / manage projects", "Create a draft, attach images, preview, and publish your work."],
  ["certificates", "Add / manage certificates", "Upload certificate images or PDFs and publish genuine credentials."],
  ["posts", "Write a post", "Draft, preview, and publish an article."],

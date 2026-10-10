@@ -1,3 +1,4 @@
+import { getPresentation } from "../settings/public";
 import "server-only";
 import { z } from "zod";
 import { slugSchema } from "../content/models";
@@ -19,7 +20,12 @@ export async function publishedSitemap(origin: string) {
     const db = await getDatabase();
     const read = (name: string) => db.collection(name).find({ status: "published" }, { projection: { slug: 1, status: 1, updatedAt: 1 }, maxTimeMS: 5000 }).sort({ slug: 1 }).limit(50_001).toArray();
     const [projects, posts] = await Promise.all([read("projects"), read("posts")]);
-    return sitemapEntries(origin, projects, posts);
+    const presentation = await getPresentation();
+    const disabled = presentation.pages.filter((page) => !page.enabled).map((page) => page.path);
+    const entries = sitemapEntries(origin, projects, posts).filter((entry) => !disabled.some((path) => entry.url === origin + path || entry.url.startsWith(origin + path + "/")));
+    if (presentation.pages.find((page) => page.path === "/about")?.enabled) entries.push({ url: origin + "/about", lastModified: undefined });
+    if (presentation.pages.find((page) => page.path === "/ideas")?.enabled) entries.push({ url: origin + "/ideas", lastModified: undefined });
+    return entries;
   } catch { throw new DatabaseUnavailableError(); }
 }
 export function xmlEscape(value: string) { return value.replace(/[<>&"']/g, (char) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" })[char]!); }

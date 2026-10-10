@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getPublicSettings } from "@/lib/settings/public";
-import { navigation } from "@/config/site";
+import { configuredNavigation, parsePresentation } from "@/lib/settings/presentation";
 import { ContactLinks } from "./contact-links";
 import { PageContainer } from "./page-container";
 export async function Footer() {
  const { data } = await getPublicSettings();
+ const navigation = configuredNavigation(parsePresentation(data.presentationJson));
  return <footer className="border-t border-border bg-surface/60"><PageContainer className="py-12 sm:py-16">
  <div className="grid gap-10 md:grid-cols-[1.4fr_0.7fr_1fr]">
  <div><p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">Web / IoT / Robotics</p><h2 className="mt-4 max-w-sm text-3xl font-semibold leading-tight tracking-tight">Let&apos;s build something practical.</h2><p className="mt-5 text-sm text-muted">{data.name}{data.country ? ` / ${data.country}` : ""}</p>{data.availability && <p className="mt-3 text-sm leading-6 text-accent">{data.availability}</p>}</div>

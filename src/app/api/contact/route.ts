@@ -14,6 +14,7 @@ export async function POST(request: Request) {
   await takeRate("submit-email", input.email.toLowerCase(), 3, 3600000, context.secret);
   await saveContactMessage(input, ticket);
   revalidatePath("/dashboard/inbox");
+  revalidatePath("/dashboard", "layout");
   return Response.json({ saved: true, message: "Your message has been saved. Thank you for getting in touch." }, { status: 201, headers: { "Cache-Control": "no-store" } });
  } catch (error) { return contactError(error); }
 }

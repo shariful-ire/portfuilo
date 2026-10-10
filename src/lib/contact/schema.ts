@@ -4,9 +4,14 @@ const line = (max: number) => z.string().trim().min(1).max(max).refine((value) =
 export const contactMessageInput = z.object({ name: line(100), email: contactEmail, subject: line(200), message: z.string().trim().min(10).max(10000).refine((value) => !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value), "Unsupported control characters") }).strict();
 export const contactSubmissionSchema = contactMessageInput.extend({ website: z.string().max(200).default(""), token: z.string().min(1).max(200) }).strict();
 export type ContactMessageInput = z.infer<typeof contactMessageInput>;
-export const inboxQuerySchema = z.object({ page: z.coerce.number().int().min(1).max(1000).default(1), state: z.enum(["all", "unread", "read"]).default("all") });
+export const inboxQuerySchema = z.object({ q: z.string().trim().max(100).default(""), page: z.coerce.number().int().min(1).max(1000).default(1), state: z.enum(["all", "unread", "read"]).default("all") });
 export const inboxDeleteSchema = z.object({ expectedUpdatedAt: z.iso.datetime() }).strict();
 export const inboxStatusSchema = inboxDeleteSchema.extend({ state: z.enum(["read", "unread"]) });
-export type InboxItem = { id: string; name: string; email: string; subject: string; state: "read" | "unread" | "archived"; createdAt: string; updatedAt: string };
+export type InboxItem = { preview: string; id: string; name: string; email: string; subject: string; state: "read" | "unread" | "archived"; createdAt: string; updatedAt: string };
 export type InboxMessage = InboxItem & { message: string };
 export type InboxPage = { items: InboxItem[]; total: number; page: number; limit: number };
+
+export function inboxFilter(query: z.infer<typeof inboxQuerySchema>) {
+ const literal = query.q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+ return { ...(query.state === "all" ? {} : { state: query.state }), ...(query.q ? { $or: ["name", "email", "subject", "message"].map((key) => ({ [key]: { $regex: literal, $options: "i" } })) } : {}) };
+}

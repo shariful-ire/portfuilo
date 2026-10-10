@@ -25,7 +25,7 @@ export async function isReferenced(id: string, session: ClientSession) {
   const db = await getDatabase();
   const queries: [string, Filter<Document>][] = [
     ["profiles", { $or: [{ photoMediaId: id }, { cvMediaId: id }] }],
-    ["siteSettings", { sharingMediaId: id }],
+    ["siteSettings", { $or: [{ sharingMediaId: id }, { "presentation.logoId": id }, { "presentation.lightLogoId": id }, { "presentation.darkLogoId": id }, { "presentation.faviconId": id }] }],
     ["projects", { $or: [{ mediaIds: id }, { thumbnailId: id }, { "gallery.mediaId": id }] }], ["certificates", { $or: [{ mediaId: id }, { pdfMediaId: id }] }], ["posts", { coverMediaId: id }],
     ["homepageSections", { $or: [{ "section.content.mediaId": id }, { "section.content.items.mediaId": id }] }],
   ];

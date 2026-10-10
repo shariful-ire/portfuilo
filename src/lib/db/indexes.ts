@@ -6,6 +6,7 @@ import { getDatabase } from "./connection";
 const publishedOrder: IndexDescription = { key: { status: 1, displayOrder: 1, _id: 1 }, name: "published_display_order" };
 const uniqueSlug: IndexDescription = { key: { slug: 1 }, unique: true, name: "unique_slug" };
 export const indexDefinitions: Record<CollectionName, IndexDescription[]> = {
+  ideaSubmissions: [{ key: { reviewStatus: 1, createdAt: -1, _id: 1 }, name: "idea_review_date" }, { key: { publicationState: 1, approved: 1, publicationConsent: 1, updatedAt: -1 }, name: "idea_publication" }, { key: { createdAt: -1, _id: 1 }, name: "idea_inbox_date" }],
   profiles: [{ key: { key: 1 }, unique: true, name: "singleton_owner" }],
   siteSettings: [{ key: { key: 1 }, unique: true, name: "singleton_site" }],
   homepageSections: [publishedOrder],

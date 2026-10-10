@@ -6,7 +6,7 @@ import { settingsInputSchema, settingsDefaults } from "../src/lib/settings/schem
 import { readBytes, apiError, RequestError } from "../src/lib/admin/http";
 import { cloudinaryServer } from "../src/lib/media/cloudinary";
 import { isReferenced, lockReadyMedia } from "../src/lib/media/storage";
-import { saveSettings } from "../src/lib/settings/store";
+import { loadSettingsForm, saveSettings } from "../src/lib/settings/store";
 import { AdminAuthorizationError } from "../src/lib/auth/policy";
 import { verifyUploadTicket } from "../src/lib/media/ticket";
 import type { UploadRecord } from "../src/lib/media/storage";
@@ -87,13 +87,20 @@ test("reference writers lock only ready uploads, preventing save/deletion races"
 test("settings save publishes both singleton records in one transaction and clears optional values", async () => {
   const written: { name: string; record: Record<string, unknown> }[] = [];
   const session = { withTransaction: async (fn: () => Promise<unknown>) => fn(), endSession: async () => undefined };
-  await fakeDatabase({ startSession: () => session, db: () => ({ collection: (name: string) => ({ findOne: async () => null, replaceOne: async (_filter: object, record: Record<string, unknown>, options: { session: unknown }) => { assert.equal(options.session, session); written.push({ name, record }); } }) }) }, async () => {
-    await saveSettings({ ...settingsDefaults, github: "", country: "", biography: "Confirmed biography", siteTitle: "Saved title" });
+  await fakeDatabase({ startSession: () => session, db: () => ({ collection: (name: string) => ({ findOne: async () => written.find((entry) => entry.name === name)?.record ?? null, replaceOne: async (_filter: object, record: Record<string, unknown>, options: { session: unknown }) => { assert.equal(options.session, session); written.push({ name, record }); } }) }) }, async () => {
+    await saveSettings({ ...settingsDefaults, github: "", country: "", biography: "Confirmed biography", siteTitle: "Saved title", webFocusTitle: "Custom web focus", hardwareFocusTitle: "", hardwareFocusDescription: "" });
     assert.deepEqual(written.map((entry) => entry.name), ["profiles", "siteSettings"]);
     assert.equal(written[0].record.github, undefined);
     assert.equal(written[0].record.country, undefined);
     assert.equal(written[0].record.status, "published");
+    assert.equal(written[0].record.webFocusTitle, "Custom web focus");
+    assert.equal(written[0].record.hardwareFocusTitle, "");
+    assert.equal(written[0].record.hardwareFocusDescription, "");
     assert.equal(written[1].record.title, "Saved title");
+    const reloaded = await loadSettingsForm();
+    assert.equal(reloaded.webFocusTitle, "Custom web focus");
+    assert.equal(reloaded.hardwareFocusTitle, "");
+    assert.deepEqual(JSON.parse(reloaded.presentationJson), JSON.parse(settingsDefaults.presentationJson));
   });
 });
 test("failed media locking aborts settings before either record is written", async () => {

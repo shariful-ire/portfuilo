@@ -1,3 +1,4 @@
+import { requirePublicPage } from "@/lib/settings/pages";
 import { publicMetadata } from "@/lib/seo/metadata";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  return publicMetadata(`/projects/${project.slug}`, project.title, project.summary, project.thumbnail);
 }
 export default async function ProjectPage({ params }: Props) {
+ await requirePublicPage("/projects");
  let project;
  try { project = await getPublicProject((await params).slug); }
  catch { return <PageContainer className="py-16"><h1 className="text-3xl font-semibold">Project unavailable</h1><p role="status" className="mt-5 text-muted">The project could not be loaded. Please reload this page in a moment.</p><Link href="/projects" className="mt-8 inline-block text-accent">Browse projects</Link></PageContainer>; }

@@ -3,10 +3,12 @@ import { test } from "node:test";
 import { MongoServerError, type MongoClient } from "mongodb";
 import { contactActions, emailHref, whatsappValue, telegramValue } from "../src/lib/contact/links";
 import { settingsInputSchema, settingsDefaults } from "../src/lib/settings/schema";
-import { contactSubmissionSchema } from "../src/lib/contact/schema";
+import { contactSubmissionSchema, inboxFilter, inboxQuerySchema } from "../src/lib/contact/schema";
 import { issueToken, verifyToken, takeRate, ContactRateError, clientIdentity, publicContactContext } from "../src/lib/contact/protection";
 import { ContactConfigurationError } from "../src/lib/contact/environment";
 import { saveContactMessage } from "../src/lib/contact/store";
+import { saveIdea } from "../src/lib/ideas/store";
+import { ideaInputSchema } from "../src/lib/ideas/schema";
 import { markInboxMessage, deleteInboxMessage } from "../src/lib/contact/inbox";
 import { RequestError } from "../src/lib/admin/http";
 import { parsePublicRecord, DatabaseContentError } from "../src/lib/db/public-read";
@@ -14,13 +16,21 @@ import { POST } from "../src/app/api/contact/route";
 import { contactError } from "../src/lib/contact/http";
 const secret = "unit-test-secret-not-a-real-secret-123456789";
 const input = { name: "Fixture sender", email: "fixture@example.com", subject: "Fixture subject", message: "Fixture message, not an actual submission." };
+test("inbox search treats regular-expression syntax literally and preserves state filter", () => {
+ const filter = inboxFilter(inboxQuerySchema.parse({ q: "[robot].*", state: "unread" }));
+ assert.equal(filter.state, "unread");
+ const search = filter.$or![0].name.$regex;
+ assert.ok(new RegExp(search, "i").test("Idea: [robot].*"));
+ assert.ok(!new RegExp(search, "i").test("robot project"));
+ assert.equal(inboxQuerySchema.safeParse({ q: "x".repeat(101) }).success, false);
+});
 type Row = Record<string, unknown>;
 async function fixture(run: (state: { tables: Record<string, Row[]>; failInsert: boolean; acknowledge: boolean }) => Promise<void>) {
- const state = { tables: { contactMessages: [], contactReceipts: [], contactRateLimits: [] } as Record<string, Row[]>, failInsert: false, acknowledge: true };
+ const state = { tables: { contactMessages: [], contactReceipts: [], contactRateLimits: [], ideaSubmissions: [] } as Record<string, Row[]>, failInsert: false, acknowledge: true };
  const matches = (row: Row, filter: Row) => Object.entries(filter).every(([key, value]) => value instanceof Date ? row[key] instanceof Date && (row[key] as Date).getTime() === value.getTime() : value && typeof value === "object" && "$lt" in value ? Number(row[key]) < Number(value.$lt) : row[key] === value);
  const session = { endSession: async () => undefined, withTransaction: async (fn: () => Promise<unknown>) => { const snapshot = structuredClone(state.tables); try { return await fn(); } catch (error) { state.tables = snapshot; throw error; } } };
  const client = { startSession: () => session, db: () => ({ collection: (name: string) => ({
-  insertOne: async (row: Row) => { if (state.failInsert && name === "contactMessages") throw new Error("Simulated write failure"); if (state.tables[name].some((entry) => entry._id === row._id)) throw new MongoServerError({ code: 11000, message: "Duplicate fixture key" }); state.tables[name].push(structuredClone(row)); return { acknowledged: state.acknowledge }; },
+  insertOne: async (row: Row) => { if (state.failInsert && ["contactMessages", "ideaSubmissions"].includes(name)) throw new Error("Simulated write failure"); if (state.tables[name].some((entry) => entry._id === row._id)) throw new MongoServerError({ code: 11000, message: "Duplicate fixture key" }); state.tables[name].push(structuredClone(row)); return { acknowledged: state.acknowledge }; },
   updateOne: async (filter: Row, update: { $set?: Row; $setOnInsert?: Row; $inc?: Record<string, number> }, options?: { upsert?: boolean }) => {
    let row = state.tables[name].find((entry) => matches(entry, filter)); let inserted = false;
    if (!row && options?.upsert) { if (state.tables[name].some((entry) => entry._id === filter._id)) throw new MongoServerError({ code: 11000, message: "Duplicate fixture key" }); row = { _id: filter._id, ...update.$setOnInsert }; state.tables[name].push(row); inserted = true; }
@@ -96,4 +106,16 @@ test("inbox read/unread and delete persist, reject stale writes, and never enter
  await markInboxMessage(String(row._id), "unread", (row.updatedAt as Date).toISOString()); assert.equal(row.state, "unread");
  assert.throws(() => parsePublicRecord("contactMessages" as never, row), DatabaseContentError);
  await deleteInboxMessage(String(row._id), (row.updatedAt as Date).toISOString()); assert.equal(state.tables.contactMessages.length, 0);
+}));
+
+test("idea save rollback prevents false success and preserves token retry after database failure", async () => fixture(async (state) => {
+ const idea = ideaInputSchema.parse({ name: "Fixture", email: "fixture@example.com", title: "Fixture idea", category: "Research", description: "A fixture description for the failure test.", problem: "Verify rollback of a failed database operation.", collaboration: "Verify the transaction without creating real ideas.", storageConsent: true });
+ const ticket = { id: "test-idea-receipt", expiresAt: new Date(Date.now() + 60000) };
+ state.failInsert = true;
+ await assert.rejects(saveIdea(idea, ticket));
+ assert.equal(state.tables.contactReceipts.length, 0); assert.equal(state.tables.ideaSubmissions.length, 0);
+ state.failInsert = false; await saveIdea(idea, ticket);
+ assert.equal(state.tables.ideaSubmissions.length, 1); assert.equal(state.tables.ideaSubmissions[0].publicationState, "draft");
+ await assert.rejects(saveIdea(idea, ticket), (error: unknown) => error instanceof RequestError && error.status === 409);
+ assert.equal(state.tables.ideaSubmissions.length, 1);
 }));

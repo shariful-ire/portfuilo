@@ -11,7 +11,7 @@ class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean
   render() { return this.state.failed ? <RobotFallback /> : this.props.children; }
 }
 
-export function HeroRobot() {
+export function HeroRobot({ enabled = true }: { enabled?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const pointer = useRef({ x: 0, y: 0 });
   const [inView, setInView] = useState(false);
@@ -32,18 +32,18 @@ export function HeroRobot() {
     return () => { observer.disconnect(); motion.removeEventListener("change", update); mobile.removeEventListener("change", update); document.removeEventListener("visibilitychange", visibility); };
   }, []);
   useEffect(() => {
-    if (reduced || !inView || !visible || loaded) return;
+    if (!enabled || reduced || !inView || !visible || loaded) return;
     const timer = setTimeout(() => setLoaded(true), 200);
     return () => clearTimeout(timer);
-  }, [reduced, inView, visible, loaded]);
+  }, [enabled, reduced, inView, visible, loaded]);
   return <div ref={host} aria-hidden="true" className="relative mx-auto h-64 w-full max-w-md sm:h-80 lg:h-[420px]" onPointerMove={(event) => {
-    if (compact || reduced) return;
+    if (!enabled || compact || reduced) return;
     const rect = event.currentTarget.getBoundingClientRect();
     pointer.current = { x: (event.clientX - rect.left) / rect.width * 2 - 1, y: (event.clientY - rect.top) / rect.height * 2 - 1 };
   }} onPointerLeave={() => { pointer.current = { x: 0, y: 0 }; }}>
     <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(ellipse,#16363c66,transparent_65%)]" />
     <div className="pointer-events-none relative h-full">
-      {loaded && !reduced ? <SceneBoundary><Suspense fallback={<RobotFallback />}><RobotScene active={visible && inView} compact={compact} pointer={pointer} /></Suspense></SceneBoundary> : <RobotFallback />}
+      {enabled && loaded && !reduced ? <SceneBoundary><Suspense fallback={<RobotFallback />}><RobotScene active={visible && inView} compact={compact} pointer={pointer} /></Suspense></SceneBoundary> : <RobotFallback />}
     </div>
   </div>;
 }

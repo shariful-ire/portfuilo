@@ -1,3 +1,5 @@
+import { getPresentation } from "@/lib/settings/pages";
+import { HeroHeading } from "@/components/hero/hero-heading";
 import { publicMetadata } from "@/lib/seo/metadata";
 import { HeroRobot } from "@/components/hero/hero-robot";
 import { ContactForm } from "@/components/contact/contact-form";
@@ -18,6 +20,8 @@ export async function generateMetadata() { return publicMetadata("/"); }
 
 export default async function Home() {
   const { data: profile, photo, cv, unavailable } = await getPublicSettings();
+  const presentation = await getPresentation();
+  const projectsEnabled = presentation.pages.find((page) => page.path === "/projects")?.enabled;
   const github = contactActions(profile).find((action) => action.channel === "github");
   return (
     <><AdminToolbar /><PageContainer>
@@ -36,28 +40,23 @@ export default async function Home() {
           <span className="h-px w-8 bg-accent" />
           {profile.name}
         </p>
-        <h1
-          id="hero-title"
-          className="max-w-4xl text-4xl leading-[1.1] font-semibold tracking-[-0.045em] sm:text-5xl xl:text-6xl"
-        >
-          {profile.headline}
-        </h1>
+        <HeroHeading headline={profile.headline} roles={presentation.roles} enabled={presentation.animations} />
         <p className="mt-8 max-w-2xl text-base leading-8 text-muted sm:text-lg">
           {profile.introduction}
         </p>
         {profile.availability && <p className="mt-5 text-sm text-accent">{profile.availability}</p>}
         {photo && <Image sizes="192px" src={photo.url} alt={photo.alt} width={240} height={240} className="mt-8 size-48 rounded-2xl object-cover" />}
         <div className="mt-10 flex flex-wrap gap-4">
-          <Link href="/projects" className={buttonStyles()}>
+          {projectsEnabled && <Link href="/projects" className={buttonStyles()}>
             Explore projects <span aria-hidden="true">↘</span>
-          </Link>
+          </Link>}
           {github && <a href={github.href} className={buttonStyles("secondary")}>
             GitHub <span aria-hidden="true">↗</span>
           </a>}
           {cv && <a href={cv.url} target="_blank" rel="noopener noreferrer" className={buttonStyles("secondary")}>View CV (PDF)</a>}
         </div>
         </div>
-        <HeroRobot />
+        <HeroRobot enabled={presentation.animations} />
         </div>
         <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-6 font-mono text-xs text-muted">
           <span>Frontend Development</span>
@@ -65,32 +64,33 @@ export default async function Home() {
           <span>Robotics</span>
         </div>
       </section>
-      <section
-        id="about"
-        aria-labelledby="about-title"
-        className="grid gap-10 border-b border-border py-16 sm:py-20 md:grid-cols-[1fr_2fr]"
-      >
-        <div>
-          <p className="mb-3 font-mono text-xs uppercase tracking-widest text-accent">
-            About
-          </p>
-          <h2
-            id="about-title"
-            className="text-3xl font-semibold tracking-tight"
-          >
-            At the intersection
-            <br className="hidden md:block" /> of web & hardware.
-          </h2>
+      <section id="about" aria-labelledby="about-title" className="border-b border-border py-16 sm:py-24">
+        <p className="section-eyebrow">About</p>
+        <h2 id="about-title" className="section-heading">At the intersection of web &amp; hardware.</h2>
+        <p className="mt-6 max-w-3xl whitespace-pre-line text-base leading-8 text-muted sm:text-lg">{profile.biography || profile.introduction}</p>
+        {(profile.city || profile.country) && <p className="mt-5 text-sm text-muted">Based in {[profile.city, profile.country].filter(Boolean).join(", ")}</p>}
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          {profile.webFocusTitle && <Card className="relative overflow-hidden border-t-2 border-t-accent bg-gradient-to-br from-elevated to-surface">
+            <span aria-hidden="true" className="mb-8 inline-flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 font-mono text-lg text-accent">&lt;/&gt;</span>
+            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">{profile.webFocusTitle}</h3>
+            {profile.webFocusDescription && <p className="mt-4 max-w-lg leading-7 text-muted">{profile.webFocusDescription}</p>}
+          </Card>}
+          {profile.hardwareFocusTitle && <Card className="relative overflow-hidden border-t-2 border-t-sky-300 bg-gradient-to-br from-sky-950/30 to-surface">
+            <span aria-hidden="true" className="mb-8 inline-flex size-12 items-center justify-center rounded-xl border border-sky-300/25 bg-sky-300/10 font-mono text-lg text-sky-200">{ "{ }" }</span>
+            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">{profile.hardwareFocusTitle}</h3>
+            {profile.hardwareFocusDescription && <p className="mt-4 max-w-lg leading-7 text-muted">{profile.hardwareFocusDescription}</p>}
+          </Card>}
         </div>
-        <Card>
-          {profile.biography && <p className="mb-6 whitespace-pre-line leading-8 text-muted">{profile.biography}</p>}
-          {(profile.degree || profile.university || profile.department) && <p className="mb-5 text-sm text-accent">Education</p>}
-          {profile.degree && <h3 className="text-xl leading-relaxed font-medium">{profile.degree}</h3>}
-          {profile.department && <p className="mt-3 text-muted">{profile.department}</p>}
-          {profile.university && <p className="mt-3 leading-7 text-muted">{profile.university}</p>}
-          {(profile.city || profile.country) && <p className="mt-6 border-t border-border pt-5 text-sm text-muted">Based in {[profile.city, profile.country].filter(Boolean).join(", ")}</p>}
-        </Card>
       </section>
+      {(profile.degree || profile.university || profile.department) && <section id="education" aria-labelledby="education-title" className="border-b border-border py-16 sm:py-24">
+        <p className="section-eyebrow">Education</p>
+        <h2 id="education-title" className="section-heading">Learning across software and hardware.</h2>
+        <Card className="mt-10 border-l-2 border-l-accent">
+          {profile.degree && <h3 className="max-w-3xl text-xl leading-relaxed font-medium sm:text-2xl">{profile.degree}</h3>}
+          {profile.department && <p className="mt-3 leading-7 text-muted">{profile.department}</p>}
+          {profile.university && <p className="mt-4 leading-7 text-muted">{profile.university}</p>}
+        </Card>
+      </section>}
       <HomeSections />
       <section
         id="contact"

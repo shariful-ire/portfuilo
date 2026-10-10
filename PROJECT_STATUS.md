@@ -479,3 +479,92 @@ Then visit the footer's Manage portfolio link (or `/dashboard`), choose Add / ma
 - Both env files parsed and configured values verified without printing secrets. Authenticated Cloudinary SDK read-only ping returned ok. No assets uploaded or deleted during this check.
 - Application code and dependencies unchanged; configuration checks performed instead of repeating build/tests.
 - Next: restart local server, import updated production env values into Vercel and redeploy when ready. Verify Google admin login and actual image/PDF upload/save/publish flows through the protected dashboard; those flows are still unverified. No deployment performed. Rotate credentials shared in chat before production use.
+
+
+## Portfolio enhancement - Phase 1: layout and career positioning (2026-10-10)
+
+- Completed separate full-width About and Education sections; Education follows About on every viewport. Existing database-managed sections still render after these profile sections. Added distinct Web Development and IoT & Robotics cards, refined headings, spacing and card surfaces.
+- Added four validated editable career-focus fields to the existing settings form, profile schema, transactional store and public reader. Legacy profiles receive defaults; explicitly cleared titles hide their cards. No authentication, uploads, or content architecture replaced.
+- Updated confirmed default headline, introduction and degree. Ran scripts/update-career-positioning.ts: three exact-match old default fields updated in the real profile; custom biography and other content preserved. Script is idempotent and never overwrites custom wording.
+- Checks: lint, typecheck, production build and all 86 tests passed, including amended transactional settings-save assertions for focus fields and clearing. Sandbox worker restrictions required rerunning tests/build outside the sandbox.
+- Headless Chrome verified 1280px and 375px: Education below About, matching section widths, both focus cards, saved new headline, no horizontal overflow or uncaught browser exceptions. Screenshots reviewed. Existing user development server left running.
+- No new external configuration. Google login and authenticated browser settings/media operations remain unverified.
+- Next: Phase 2 hero word reveal, stable rotating roles, staggered card reveals and refined form/dashboard motion with reduced-motion safeguards. Phases 3-7 remain pending.
+
+
+## Portfolio enhancement - Phase 2: text animation and UI motion (2026-10-10)
+
+- Added semantic server-rendered hero heading with a short word reveal and three rotating roles. CSS grid reserves the largest role height, preventing layout shifts; Pause/Resume is keyboard accessible. Rotation pauses offscreen/in hidden tabs, reduced-motion users get static text, and animation failures leave readable content.
+- Reused Motion mini for staggered cards, subtle hover/press feedback, mobile navigation, form/error and dashboard panel entrances. Body text is not repeatedly animated. Existing 3D loading and static fallback preserved.
+- Checks: lint, typecheck and production build passed. Browser checks at 1280px and 375px passed role rotation, stable following-content position, pause, separate About/Education layout, no overflow and mobile Escape focus restoration. Reduced-motion check passed static roles/heading and no canvas; simulated Web Animations failure and JavaScript-disabled checks kept heading visible. No uncaught browser exceptions. Mobile hero screenshot reviewed.
+- Client secret scan passed across 34 production client files, checking all eight configured sensitive values without printing them.
+- Visual review caught an old introduction remaining because of line endings; corrected the default and re-ran the idempotent exact-match migration (one introduction updated). Custom biography remains unchanged.
+- No new configuration or deployment. Authenticated dashboard animation/settings browser flows still require Google login.
+- Next: Phase 3 extend existing settings with grouped branding/profile/navigation/appearance/contact controls, secure logo/favicon references, page visibility/SEO and configurable roles/accent/motion. Phases 3-7 remain pending.
+
+
+## Portfolio enhancement - Phase 3: site management settings (2026-10-10)
+
+- Extended existing settings form with Branding, Profile, Navigation & Pages, Appearance & Motion, Contact & Social Links and SEO controls. Persistent presentation settings are a strict typed object in siteSettings; the existing form transports a validated JSON string. Legacy records keep compatible defaults.
+- Primary/dark/light logo selection and previews, required logo alt text, site name, and validated square PNG favicon sizes (32/48/96/180/192/512). Reused authorized media upload, ready-media transaction locks, publication and reference-safe deletion. Dark theme chooses dark then primary logo; light variant is stored/previewed for future use, no light theme added.
+- Supported projects/certificates/posts/about page labels, order, visibility, title, introduction and SEO. About informational page supports editable escaped heading/text blocks and preview; disabled by default. Authentication and dashboard paths cannot be configured. Disabled content uses Next notFound with noindex, leaves navigation/sitemap and related homepage sections; streamed responses may use HTTP 200 per Next conventions.
+- Three accessible accent options, editable hero roles and global decorative-motion/3D toggle. Reduced-motion preference always takes priority. Settings writes retain shared authorization and invalidate public layout caches.
+- Checks: lint/typecheck, production build and 89 unit tests passed. Added tests for route allowlist, navigation order/visibility, unsafe asset IDs, duplicate pages, malformed settings, limits and settings readback.
+- scripts/verify-presentation.ts passed against a uniquely named isolated live MongoDB database and production server: transactional save/reconnect/readback, media-reference protection, sitemap/disabled direct routes, metadata, escaped script text, accent/motion attributes, and HTTP 401 for unauthenticated settings writes. Test database and server removed. Production auth test uses an HTTPS origin as required; no auth restriction weakened.
+- No configuration changes required. Real authenticated Google dashboard interactions, logo/photo upload and replacement remain unverified; test fixtures do not claim Cloudinary upload success.
+- Next: Phase 4 enhance existing inbox search/previews/unread navigation count, then Phases 5-6 Ideas & Research and Phase 7 final verification.
+
+
+## Portfolio enhancement - Phase 4: Messages inbox (2026-10-10)
+
+- Enhanced the existing protected contact inbox with literal text search across sender/email/subject/message, message previews, and unread count in dashboard navigation. Existing date/detail view, read/unread filters, pagination, optimistic concurrency and confirmed deletion retained. Added loading feedback and dashboard count invalidation after submissions/status changes/deletion.
+- Every privileged read uses requireAdmin; mutations retain authorizeMutation. No second inbox, public message query or notification claim added. Existing contact validation, signed tokens, honeypot, persistent MongoDB rate limits and transactional save/receipt behavior retained.
+- Checks: typecheck, lint, production build and all 90 tests passed, including regex-literal search and existing contact persistence/replay/failure/stale-write/authorization tests. Authenticated inbox UI remains unverified without an interactive Google login.
+- Next: Phase 5 public Ideas & Research form with separate private persistent submissions and consent, then Phase 6 protected review/public summaries, then final verification.
+
+
+## Portfolio enhancement - Phase 5: public Ideas & Research (2026-10-10)
+
+- Added /ideas with a text-only accessible proposal form: identity/organization, title/category, description/problem/help, reference URL, timeline, required storage/contact consent, optional publication consent and separate optional attribution consent. Clear private-review notice and field-specific validation/failure states; no visitor uploads.
+- Dedicated typed ideaSubmissions collection defaults to new/private draft/unapproved. Public submission shares existing origin checks, signed minimum-age/expiring token, honeypot, MongoDB global/IP rate budgets, per-email limits and transactional replay receipt; success follows acknowledged database commit only. Raw ideas excluded from generic public readers.
+- Added Ideas to supported page management, navigation and sitemap with backward-compatible settings normalization; disabled Ideas rejects submissions. Added review/date/publication indexes for the next phase.
+- Checks: lint, typecheck, production build and 94 tests passed. Isolated real production HTTP/MongoDB verification passed missing-consent/honeypot rejection, actual HTTP 201 save, duplicate-token HTTP 409, reconnect/readback of private/unapproved defaults and no sender email in public HTML. Temporary server/database removed. No owner content seeded.
+- Same contact env configuration; run db:indexes to install the new indexes. No new credentials or external service.
+- Next: Phase 6 protected idea review/status/notes/search/filter/pagination, consent-checked edited public summaries and reply links; Phase 7 final verification afterward.
+
+
+## Portfolio enhancement - Phase 6: protected idea review and publication (2026-10-10)
+
+- Added dashboard Ideas & Research list/detail, literal search, category/review/publication filters and pagination. Authorized admin can change review status, save private notes, delete with confirmation and open an encoded mailto reply; no email is sent by the application. Every private store read/write calls requireAdmin and mutation endpoints also enforce Origin. Version checks prevent stale overwrites/deletes.
+- Separate edited summary title/body, preview, explicit approval, publish/unpublish and optional separately consented attribution. Editing summary text resets approval in the UI. Server publication policy requires immutable sender consent, approval and nonempty summary; submitted consent and raw identity/content cannot be edited through review payloads. Public fields reject email addresses.
+- Public reader queries consent+approved+published and projects only summary fields; serialization rechecks every flag and omits attribution without consent. Email, raw submission and notes never enter public response objects. Public /ideas displays approved summaries with an honest empty/error state.
+- Checks: 98 tests passed, including consent/approval/default-draft privacy, forbidden review mutations, private-field projection, attribution and transactional idea-save rollback/replay. Lint, typecheck and production build passed. Real portfolio indexes installed without sample content.
+- Final isolated HTTP/MongoDB verification passed actual idea save, replay rejection, edited summary publication fixture, unpublish, excluded private fields, and HTTP 401 for anonymous/spoofed admin list/detail/update/delete requests. Fixture publication uses the real pure policy and database, not a simulated Google session; actual authenticated dashboard operation remains unverified.
+- A transient MongoDB outage interrupted intermediate runs; read-only diagnostic recovered and the full verification retry passed. Temporary test server/database from the successful run cleaned up.
+- Next: Phase 7 final regression/browser checks, documentation, and verification-database cleanup audit. No deployment authorized or performed.
+
+
+## Portfolio enhancement - Phase 7: final verification and delivery (2026-10-10)
+
+All seven requested enhancement phases are implemented. Existing stack, Google authorization, MongoDB content stores, Cloudinary utilities and homepage section manager retained. No public deployment or external messages sent.
+
+### Final checks passed
+
+- Lint and TypeScript checks; production build includes /ideas, /about and protected dashboard/API idea routes.
+- All 98 tests pass: existing auth/draft/content/contact/media tests plus presentation allowlist/persistence, literal inbox search, idea consent/approval/attribution/private projection and failed-save transaction rollback/replay.
+- Live db:indexes passed on the configured database, adding idea review/publication indexes without seed content.
+- Existing isolated db:verify regression passed actual content save/publish/reconnect/unpublish/delete, unique slugs, stale-write rejection, homepage ordering/visibility, profile settings, contact storage/replay and published sitemap. Updated its old sitemap count to include the new Ideas page. Test database removed.
+- Extended scripts/verify-presentation.ts passed real settings save/readback, media-reference protection, page visibility/direct-URL not-found/noindex, metadata, escaped text, site accent/motion, actual public idea HTTP save/replay and private defaults. Approved-summary fixtures verified public projection, unpublish, and anonymous/spoofed private API rejection. Provider Google login was not simulated. Test database/server removed.
+- Headless Chrome at 1280px and 375px passed Education below full-width About, focus cards/new positioning, no horizontal overflow, role rotation without layout shifts, Pause, keyboard mobile menu/Escape, Ideas text-only fields and unchecked required consent. Desktop/mobile screenshots reviewed.
+- Reduced motion: static heading/roles and robot fallback, no canvas. JavaScript disabled and simulated animation API failure leave semantic heading visible. Production WebGL-unavailable test displays static robot with no uncaught errors.
+- Production /ideas, /projects, /posts and /certificates do not request the Three renderer chunk or render a canvas. Three functionality on the homepage remains intact.
+- Client secret scan passed: 34 built client files and all eight configured sensitive values; no values printed.
+- Cleanup audit found no leftover task-marked presentation databases. Temporary Chrome instances/production servers stopped; user's localhost:3000 development server left running. Browser artifacts are ignored under .checks and excluded from lint/typecheck.
+
+### Configuration and verification limits
+
+No new credentials or environment variables are required. Existing MongoDB, Google admin, contact-protection and Cloudinary configuration applies. Google Console redirect/test-user setup and hosted environment import remain account/deployment responsibilities. Missing optional logo/favicon/photo/CV/contact information stays hidden. Dark theme uses dark logo then primary; optional light logo is stored/previewed only.
+
+Actual Google admin and second-account browser login, authenticated dashboard editing/inbox/review actions, and real Cloudinary upload/replacement were not performed. Unit authorization tests and anonymous HTTP rejection passed; fixture persistence/publication tests are not a claim of an OAuth/upload end-to-end flow. A temporary MongoDB connectivity interruption occurred; read-only diagnostic and subsequent full live regressions recovered and passed. Existing development dependency advisory notes remain as previously documented; dependencies were not changed in this enhancement.
+
+README documents the new settings, Messages and Ideas workflows and repeatable verification commands. Next action: owner signs in locally to exercise the authenticated UI and uploads genuine branding/profile assets; deploy only when explicitly requested.

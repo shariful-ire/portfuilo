@@ -2,6 +2,9 @@ import "server-only";
 import { cache } from "react";
 import { getPublishedProfile, getPublishedSiteSettings, getPublishedMedia } from "../db/public-read";
 import { settingsDefaults, type SettingsInput } from "./schema";
+import { parsePresentation } from "./presentation";
+
+export const getPresentation = cache(async () => parsePresentation((await getPublicSettings()).data.presentationJson));
 
 export const getPublicSettings = cache(async () => {
   const fallback = { data: { ...settingsDefaults }, photo: null, cv: null, sharing: null, unavailable: false };
@@ -11,11 +14,11 @@ export const getPublicSettings = cache(async () => {
     if (profile) {
       for (const key of Object.keys(data) as (keyof SettingsInput)[]) {
         if (key in profile) data[key] = String(profile[key as keyof typeof profile] ?? "");
-        else if (!["siteTitle", "siteDescription", "sharingMediaId"].includes(key)) data[key] = "";
+        else if (!["siteTitle", "siteDescription", "sharingMediaId", "presentationJson", "webFocusTitle", "webFocusDescription", "hardwareFocusTitle", "hardwareFocusDescription"].includes(key)) data[key] = "";
       }
       data.headline = profile.headline ?? settings?.heroText ?? settingsDefaults.headline;
     }
-    if (settings) { data.siteTitle = settings.title; data.siteDescription = settings.description; data.sharingMediaId = settings.sharingMediaId ?? ""; }
+    if (settings) { if (settings.presentation) data.presentationJson = JSON.stringify(settings.presentation); data.siteTitle = settings.title; data.siteDescription = settings.description; data.sharingMediaId = settings.sharingMediaId ?? ""; }
     const [photo, cv, sharing] = await Promise.all([data.photoMediaId ? getPublishedMedia(data.photoMediaId) : null, data.cvMediaId ? getPublishedMedia(data.cvMediaId) : null, data.sharingMediaId ? getPublishedMedia(data.sharingMediaId) : null]);
     return { data, photo: photo?.kind === "image" ? photo : null, cv: cv?.mimeType === "application/pdf" ? cv : null, sharing: sharing?.kind === "image" ? sharing : null, unavailable: false };
   } catch {

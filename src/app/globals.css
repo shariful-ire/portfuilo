@@ -44,3 +44,16 @@
 .post-prose code { font-size: .9em; color: var(--color-foreground); }
 .post-prose strong { color: var(--color-foreground); }
 .post-prose hr { border-color: var(--color-border); }
+
+/* Shared editorial rhythm; semantic content remains visible before hydration. */
+.section-eyebrow { margin-bottom: 1rem; color: var(--color-accent); font-family: var(--font-mono); font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; }
+.section-heading { max-width: 48rem; font-size: clamp(1.875rem, 4vw, 3rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.2; text-wrap: balance; }
+
+input, textarea, select { transition: border-color 160ms ease, background-color 160ms ease; }
+input:focus-visible, textarea:focus-visible, select:focus-visible { border-color: var(--color-accent); }
+@media (prefers-reduced-motion: reduce) { .role-toggle { display: none; } }
+
+html[data-accent="sky"] { --color-accent: #8bd4ff; --color-accent-hover: #b9e5ff; }
+html[data-accent="mint"] { --color-accent: #90e8bc; --color-accent-hover: #b4f1d2; }
+html[data-motion="off"] { scroll-behavior: auto; }
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
