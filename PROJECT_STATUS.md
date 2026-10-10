@@ -2,7 +2,7 @@
 
 ## Current delivery status - 2026-10-10
 
-Local usability follow-up completed: resolved Atlas DNS failures, generated missing server secrets, saved the confirmed admin email server-side and phone/WhatsApp in published settings, created three real homepage section records, improved footer/dashboard discovery, and fixed browser warnings. The user's running localhost server now returns contact tokens (200), renders the sections and phone, and shows no unavailable banner. Lint, typecheck, build, 86 tests, browser checks, and client-secret scan passed. Google OAuth and Cloudinary credentials still must be supplied before real dashboard login and uploads can work. No public deployment.
+Local usability follow-up completed: resolved Atlas DNS failures, generated missing server secrets, saved the confirmed admin email server-side and phone/WhatsApp in published settings, created three real homepage section records, improved footer/dashboard discovery, and fixed browser warnings. The user's running localhost server now returns contact tokens (200), renders the sections and phone, and shows no unavailable banner. Lint, typecheck, build, 86 tests, browser checks, and client-secret scan passed. Google OAuth credentials have now been supplied and configured locally and in the private Vercel import file; actual Google login remains unverified. Cloudinary credentials are still missing. No public deployment.
 
 ## Step 1 — Foundation
 
@@ -462,3 +462,20 @@ Completed 2026-10-10 in response to the reported runtime logs and usability issu
 Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local`, with the exact local callback `http://localhost:3000/api/auth/callback/google`, to enable the confirmed admin's Google login. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` for real image/PDF uploads. Restart after configuration/dependency changes and use the localhost URL; the LAN IP is not automatically an authorized contact/auth origin.
 
 Then visit the footer's Manage portfolio link (or `/dashboard`), choose Add / manage certificates or Add / manage projects, upload genuine media and publish. Production SITE_URL/HTTPS origins and deployment remain pending. Google session/dashboard/upload end-to-end success is not claimed without those external credentials. No authentication bypass or fake content was added to make the site appear configured.
+
+
+## Follow-up - Google OAuth and Vercel env delivery (2026-10-10)
+
+- Saved supplied Google client ID/secret in ignored `.env.local` with localhost auth/contact/SEO origins. No secrets inserted into application source or `.env.example`.
+- Prepared ignored `.env.vercel` for the confirmed HTTPS production domain, carrying the existing MongoDB connection, confirmed admin allowlist, supplied OAuth credentials and all example keys. Generated independent production auth/contact secrets; retained local secrets. No deployment or Vercel account mutation performed.
+- Production DNS override and trusted-IP header remain blank; indexing remains disabled until release readiness. Cloudinary's three variables remain blank because credentials have not been provided. No fake upload configuration.
+- Validated the file with Node env parsing and actual production auth/contact/SEO validators: HTTPS origin agreement, independent production secrets, local separation, full env-key coverage, no NEXT_PUBLIC_ secrets and ignored files passed. Application code/dependencies unchanged in this follow-up; no redundant build/test run.
+- README explains exact local/production callback URLs, Production env import, redeploy requirements and missing Cloudinary/Atlas access checks. Provider OAuth login, Google consent setup and deployed runtime are still unverified. Rotate the Google client secret shared in chat before production use.
+
+
+## Follow-up - Cloudinary configuration (2026-10-10)
+
+- Saved supplied Cloudinary credentials in ignored .env.local and .env.vercel only; placeholder template and public source remain unchanged. This supersedes earlier missing-Cloudinary notes.
+- Both env files parsed and configured values verified without printing secrets. Authenticated Cloudinary SDK read-only ping returned ok. No assets uploaded or deleted during this check.
+- Application code and dependencies unchanged; configuration checks performed instead of repeating build/tests.
+- Next: restart local server, import updated production env values into Vercel and redeploy when ready. Verify Google admin login and actual image/PDF upload/save/publish flows through the protected dashboard; those flows are still unverified. No deployment performed. Rotate credentials shared in chat before production use.

@@ -372,3 +372,24 @@ The network's default DNS resolver refused MongoDB Atlas SRV lookups. `MONGODB_D
 The root HTML now declares its smooth-scroll behavior as [Next.js requires](https://nextjs.org/docs/messages/missing-data-scroll-behavior). Fiber 9.8.1 still constructs `THREE.Clock`; [Three deprecated that class in r183](https://threejs.org/docs/pages/Clock.html). Three and its types are pinned to compatible stable 0.182.0 until Fiber migrates, without patching node_modules or suppressing console warnings.
 
 Still needed to actually sign in and upload: Google client ID/client secret and Cloudinary cloud name/API key/API secret. Put these in `.env.local` following the setup sections above, then restart. The owner email and generated server secrets are already set. Homepage content remains honestly empty until genuine entries are added and published.
+
+
+## Vercel production env import - 2026-10-10
+
+The ignored `.env.vercel` file is prepared for **Production** on `https://portfuilo.vercel.app`. Import that file through the project's Settings > Environment Variables env-file import, then save and redeploy. Do not upload it as a public asset or commit it. `.env.local` keeps localhost origins for development. Production uses separate generated auth/contact secrets, the configured MongoDB connection and owner allowlist, and the supplied Google OAuth credentials. No deployment was performed.
+
+Register both exact Google redirect URIs in the same OAuth Web client:
+
+- `http://localhost:3000/api/auth/callback/google`
+- `https://portfuilo.vercel.app/api/auth/callback/google`
+
+Use corresponding origins `http://localhost:3000` and `https://portfuilo.vercel.app` if Google requests JavaScript origins. After redeployment, visit `/sign-in`, not the callback directly. Configuration validation does not prove provider acceptance or consent-screen setup.
+
+Cloudinary cloud name/API key/API secret are still blank: fill them before importing or add them separately in Vercel before rebuilding. Production DNS override and trusted-IP header are intentionally blank; the local network workaround is not assumed necessary on Vercel. `ALLOW_INDEXING=false` remains until the site is ready for indexing. Production Atlas network access still needs to permit the Vercel deployment.
+
+The supplied Google client secret was shared in chat; rotate it in Google Cloud before production use and update both private env files with the replacement. Neither secrets nor their values belong in README/source. See [Vercel environment variable management](https://vercel.com/docs/environment-variables/managing-environment-variables) for applying changes to new deployments.
+
+
+### Cloudinary configuration status - 2026-10-10
+
+Cloudinary credentials are now configured in the private local and Vercel import env files; the authenticated read-only provider ping succeeded. Earlier missing-credential notes are superseded. Restart the local server after env changes. Import the updated production values into Vercel and redeploy to apply them. Real dashboard image/PDF upload and publication still require an authenticated browser check. Keep env files private and rotate credentials shared in chat before production use.
