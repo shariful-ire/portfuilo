@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #090e17;
+  --color-surface: #101824;
+  --color-elevated: #172332;
+  --color-foreground: #edf2f7;
+  --color-muted: #a5b2c3;
+  --color-accent: #79e3de;
+  --color-accent-hover: #a5efeb;
+  --color-border: #283445;
+  --font-sans: "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-mono: Consolas, "Liberation Mono", monospace;
+  --spacing: 0.25rem;
+}
+
+@layer base {
+  html { color-scheme: dark; scroll-behavior: smooth; }
+  body { background: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
+  ::selection { background: var(--color-accent); color: var(--color-background); }
+  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 5px; }
+  section[id] { scroll-margin-top: 2rem; }
+  button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled) { cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+.post-prose { overflow-wrap: anywhere; line-height: 1.9; color: var(--color-muted); }
+.post-prose > * + * { margin-top: 1.5rem; }
+.post-prose h2, .post-prose h3, .post-prose h4, .post-prose h5, .post-prose h6 { color: var(--color-foreground); font-weight: 600; line-height: 1.35; margin-top: 2.5rem; }
+.post-prose h2 { font-size: 1.75rem; }
+.post-prose h3 { font-size: 1.4rem; }
+.post-prose h4 { font-size: 1.2rem; }
+.post-prose a { color: var(--color-accent); text-decoration: underline; text-underline-offset: .2em; }
+.post-prose ul, .post-prose ol { padding-left: 1.6rem; }
+.post-prose ul { list-style: disc; }
+.post-prose ol { list-style: decimal; }
+.post-prose li + li { margin-top: .5rem; }
+.post-prose blockquote { border-left: 3px solid var(--color-accent); padding-left: 1.25rem; }
+.post-prose pre { overflow-x: auto; border: 1px solid var(--color-border); border-radius: .75rem; padding: 1rem; background: var(--color-surface); }
+.post-prose code { font-size: .9em; color: var(--color-foreground); }
+.post-prose strong { color: var(--color-foreground); }
+.post-prose hr { border-color: var(--color-border); }

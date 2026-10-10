@@ -1,0 +1,2 @@
+import { PageContainer } from "@/components/layout/page-container";
+export default function LoadingPosts() { return <PageContainer className="py-16"><p role="status" aria-live="polite" className="text-muted">Loading published posts...</p><div aria-hidden="true" className="mt-8 grid gap-6 md:grid-cols-3">{[1, 2, 3].map((id) => <div key={id} className="h-64 rounded-xl border border-border bg-surface" />)}</div></PageContainer>; }
