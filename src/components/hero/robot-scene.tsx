@@ -19,8 +19,9 @@ function Robot({ compact, pointer }: Omit<Props, "active">) {
     group.current.rotation.y += (pointer.current.x * 0.15 + Math.sin(phase.current * 0.45) * 0.06 - group.current.rotation.y) * blend;
     group.current.rotation.x += (pointer.current.y * 0.06 - group.current.rotation.x) * blend;
   });
-  const box = (position: [number, number, number], args: [number, number, number], color = "#243648") => <RoundedBox position={position} args={args} radius={0.12} smoothness={compact ? 1 : 3}><meshStandardMaterial color={color} roughness={0.4} metalness={0.35} /></RoundedBox>;
+  const box = (position: [number, number, number], args: [number, number, number], color = "#516879") => <RoundedBox position={position} args={args} radius={0.12} smoothness={compact ? 1 : 3}><meshStandardMaterial color={color} roughness={0.32} metalness={0.45} /></RoundedBox>;
   return <group ref={group}>
+    <mesh position={[0, -1.38, 0]} rotation={[-Math.PI / 2, 0, 0]}><torusGeometry args={[1.15, 0.018, 6, compact ? 32 : 64]} /><meshBasicMaterial color="#79e3de" transparent opacity={0.45} /></mesh>
     {box([0, 0.65, 0], [1.65, 1.1, 0.85])}
     {box([0, 0.65, 0.43], [1.36, 0.64, 0.12], "#090e17")}
     {[-0.37, 0.37].map((x) => <mesh key={x} position={[x, 0.69, 0.51]}><boxGeometry args={[0.24, 0.08, 0.025]} /><meshBasicMaterial color="#79e3de" /></mesh>)}

@@ -17,12 +17,12 @@ export function Header({ shortName, navigation, logo, animations = true }: { sho
   }, [open, animations]);
   const toggle = useRef<HTMLButtonElement>(null);
   return (
-    <header className="border-b border-border bg-background/95" onKeyDown={(event) => {
+    <header className="relative z-20 border-b border-border/70 bg-background/95" onKeyDown={(event) => {
       if (event.key === "Escape" && open) { setOpen(false); toggle.current?.focus(); }
     }}>
       <PageContainer className="flex min-h-20 flex-wrap items-center justify-between gap-4 py-4">
         <Link href="/" onClick={() => setOpen(false)} aria-label={`${shortName} — home`} className="flex items-center gap-3 text-lg font-semibold tracking-tight">
-          {logo ? <Image src={logo.url} alt={logo.alt} width={72} height={40} className="h-10 w-18 object-contain" /> : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 font-mono text-sm text-accent">S.</span>}
+          {logo ? <Image src={logo.url} alt={logo.alt} width={48} height={48} className="size-11 rounded-full border border-accent/25 bg-surface object-cover ring-4 ring-accent/5" /> : <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 font-mono text-sm text-accent">S.</span>}
           {shortName}<span className="text-accent" aria-hidden="true">/</span>
         </Link>
         <nav aria-label="Primary" className="hidden items-center gap-5 lg:gap-8 md:flex">

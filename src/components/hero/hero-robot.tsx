@@ -11,7 +11,7 @@ class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean
   render() { return this.state.failed ? <RobotFallback /> : this.props.children; }
 }
 
-export function HeroRobot({ enabled = true }: { enabled?: boolean }) {
+export function HeroRobot({ enabled = true, compactDisplay = false }: { enabled?: boolean; compactDisplay?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const pointer = useRef({ x: 0, y: 0 });
   const [inView, setInView] = useState(false);
@@ -36,7 +36,7 @@ export function HeroRobot({ enabled = true }: { enabled?: boolean }) {
     const timer = setTimeout(() => setLoaded(true), 200);
     return () => clearTimeout(timer);
   }, [enabled, reduced, inView, visible, loaded]);
-  return <div ref={host} aria-hidden="true" className="relative mx-auto h-64 w-full max-w-md sm:h-80 lg:h-[420px]" onPointerMove={(event) => {
+  return <div ref={host} aria-hidden="true" className={compactDisplay ? "relative mx-auto h-36 w-full" : "relative mx-auto h-64 w-full max-w-md sm:h-80 lg:h-[420px]"} onPointerMove={(event) => {
     if (!enabled || compact || reduced) return;
     const rect = event.currentTarget.getBoundingClientRect();
     pointer.current = { x: (event.clientX - rect.left) / rect.width * 2 - 1, y: (event.clientY - rect.top) / rect.height * 2 - 1 };

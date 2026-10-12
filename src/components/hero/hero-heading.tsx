@@ -57,7 +57,7 @@ export function HeroHeading({ headline, roles = defaultRoles, enabled = true }: 
       <span className="sr-only">{headline}</span>
       <span aria-hidden="true">{headline.split(/\s+/).map((word, i) => <span key={`${word}-${i}`}><span data-word className="inline-block">{word}</span>{" "}</span>)}</span>
     </h1>
-    {roles.length > 0 && <div ref={host} className="mt-6 flex items-start gap-3 text-sm leading-6 text-accent sm:text-base">
+    {roles.length > 0 && <div ref={host} className="mt-6 flex max-w-md items-center gap-3 text-sm leading-6 text-accent sm:text-base">
       <p className="sr-only">{roles.join(". ")}</p>
       <div aria-hidden="true" className="grid min-w-0 flex-1">{roles.map((role, i) => <span key={`${role}-${i}`} data-role className="col-start-1 row-start-1" style={{ visibility: i === 0 ? "visible" : "hidden" }}>{role}</span>)}</div>
       {enabled && roles.length > 1 && <button type="button" aria-pressed={paused} aria-label={paused ? "Resume role rotation" : "Pause role rotation"} onClick={() => setPaused(!paused)} className="role-toggle shrink-0 rounded border border-border px-2 py-1 text-xs text-muted hover:text-foreground">{paused ? "Resume" : "Pause"}</button>}

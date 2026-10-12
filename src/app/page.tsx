@@ -1,3 +1,4 @@
+import { WebPreview } from "@/components/hero/web-preview";
 import { getPresentation } from "@/lib/settings/pages";
 import { HeroHeading } from "@/components/hero/hero-heading";
 import { publicMetadata } from "@/lib/seo/metadata";
@@ -28,15 +29,16 @@ export default async function Home() {
       {unavailable && <p role="status" className="pt-5 text-sm text-muted">Saved profile updates are temporarily unavailable. Showing confirmed owner information.</p>}
       <section
         aria-labelledby="hero-title"
-        className="relative border-b border-border py-14 sm:py-20 lg:py-24"
+        className="relative border-b border-border py-12 sm:py-16 lg:py-20"
       >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_80%_25%,#16363c_0%,transparent_55%)]"
         />
-        <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14">
         <div className="min-w-0">
         <p className="mb-8 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-accent">
+          {photo && <Image priority sizes="64px" src={photo.url} alt={photo.alt || profile.name} width={64} height={64} className="size-16 shrink-0 rounded-full border border-accent/30 object-cover object-top lg:hidden" />}
           <span className="h-px w-8 bg-accent" />
           {profile.name}
         </p>
@@ -45,7 +47,7 @@ export default async function Home() {
           {profile.introduction}
         </p>
         {profile.availability && <p className="mt-5 text-sm text-accent">{profile.availability}</p>}
-        {photo && <Image sizes="192px" src={photo.url} alt={photo.alt} width={240} height={240} className="mt-8 size-48 rounded-2xl object-cover" />}
+        
         <div className="mt-10 flex flex-wrap gap-4">
           {projectsEnabled && <Link href="/projects" className={buttonStyles()}>
             Explore projects <span aria-hidden="true">↘</span>
@@ -56,9 +58,31 @@ export default async function Home() {
           {cv && <a href={cv.url} target="_blank" rel="noopener noreferrer" className={buttonStyles("secondary")}>View CV (PDF)</a>}
         </div>
         </div>
-        <HeroRobot enabled={presentation.animations} />
+        <div className="hero-studio relative min-w-0 rounded-[2rem] border border-white/10 bg-surface/70 p-5 sm:p-7">
+          <div className="mb-6 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+            <span>Software &amp; connected devices</span><span aria-hidden="true" className="size-2 rounded-full bg-accent" />
+          </div>
+          <div className="relative mx-auto hidden aspect-square w-full max-w-[300px] items-center justify-center lg:flex">
+            <div aria-hidden="true" className="absolute inset-0 rounded-full border border-accent/15" />
+            <div aria-hidden="true" className="absolute inset-4 rounded-full border border-dashed border-accent/20" />
+            {photo ? <Image priority sizes="(max-width: 639px) 220px, 260px" src={photo.url} alt={photo.alt || profile.name} width={400} height={400} className="relative size-[76%] rounded-full border-4 border-background object-cover object-top shadow-[0_0_70px_#79e3de15]" /> : <span className="flex size-[76%] items-center justify-center rounded-full border border-accent/20 bg-background text-6xl font-semibold tracking-tighter text-accent" aria-label={profile.name}>SI</span>}
+            <span className="absolute bottom-2 rounded-full border border-border bg-background px-5 py-2 text-sm font-medium">{profile.shortName} <span className="ml-2 text-accent" aria-hidden="true">&#8599;</span></span>
+          </div>
+          <div className="mt-7 grid grid-cols-2 gap-3">
+            <div className="overflow-hidden rounded-2xl border border-border bg-background/80 p-4">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-accent">01 / Web</p>
+              <WebPreview enabled={presentation.animations} />
+              <p className="text-sm font-medium">Web experiences</p><p className="mt-1 text-xs leading-5 text-muted">Interfaces. Interaction.</p>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-border bg-background/80 p-4">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-accent">02 / Hardware</p>
+              <HeroRobot enabled={presentation.animations} compactDisplay />
+              <p className="text-sm font-medium">Desk Bot &amp; IoT</p><p className="mt-1 text-xs leading-5 text-muted">Code. Connect. Create.</p>
+            </div>
+          </div>
         </div>
-        <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-6 font-mono text-xs text-muted">
+        </div>
+        <div className="mt-12 flex flex-wrap gap-3 font-mono text-xs text-muted [&>span]:rounded-full [&>span]:border [&>span]:border-border [&>span]:bg-surface/50 [&>span]:px-4 [&>span]:py-2">
           <span>Frontend Development</span>
           <span>Internet of Things</span>
           <span>Robotics</span>

@@ -57,3 +57,24 @@ html[data-accent="sky"] { --color-accent: #8bd4ff; --color-accent-hover: #b9e5ff
 html[data-accent="mint"] { --color-accent: #90e8bc; --color-accent-hover: #b4f1d2; }
 html[data-motion="off"] { scroll-behavior: auto; }
 html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+
+
+/* Portrait-led studio: quiet depth, consistent radii, and deliberate hover feedback. */
+.hero-studio { background-image: radial-gradient(ellipse at 50% 15%, color-mix(in srgb, var(--color-accent) 5%, transparent), transparent 60%); box-shadow: 0 24px 80px #00000024; }
+.hero-studio > div:last-child > div { transition: border-color 220ms ease, transform 220ms ease; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="off"]) .hero-studio > div:last-child > div:hover { border-color: color-mix(in srgb, var(--color-accent) 35%, transparent); transform: translateY(-3px); }
+}
+#about .ui-card { border-radius: 1.25rem; }
+
+/* Public-page finishing details, scoped away from dashboard forms. */
+#hero-title { text-wrap: balance; }
+#about .ui-card { box-shadow: inset 0 1px 0 #ffffff06; }
+#contact > section { padding: clamp(1.25rem, 4vw, 2.5rem); border: 1px solid var(--color-border); border-radius: 1.5rem; background: var(--color-surface); }
+#contact > section input, #contact > section textarea { background: var(--color-background); }
+.portfolio-footer { background-image: radial-gradient(ellipse at 10% 0%, color-mix(in srgb, var(--color-accent) 5%, transparent), transparent 60%); }
+@media (max-width: 639px) {
+  .hero-studio { padding: 1rem; border-radius: 1.5rem; }
+  .hero-studio > div:last-child { margin-top: 1rem; }
+  .hero-studio > div:last-child > div { padding: .75rem; }
+}

@@ -596,3 +596,19 @@ README documents the new settings, Messages and Ideas workflows and repeatable v
 - External action still needed: Cloudinary Settings > Security > Allow delivery of PDF and ZIP files; retest PDF delivery afterward. Documentation: https://cloudinary.com/documentation/pdf_optimization. Added troubleshooting guidance in PDF upload UI and README. Account console setting was not changed by this audit.
 - Verification limits: provider checks do not exercise Google-authenticated dashboard HTTP upload/save/publish end-to-end, nor verify Vercel hosting limits. No claim that every browser workflow is verified or that unrelated application bugs cannot remain. No deployment performed.
 - Next: enable/retest PDF delivery, sign in to verify real content upload/save/publish, then deploy updated code only when requested.
+
+## Portrait-led hero and visual polish (2026-10-13)
+
+- Rebuilt the hero around saved identity: large circular portrait in a framed desktop composition; mobile portrait appears beside the name above the headline. Missing photo uses initials on desktop. Rounded, bordered header logo replaces the raw rectangular image.
+- Balanced Web and Hardware panels represent frontend work and Desk Bot/IoT equally. Added lightweight Motion browser-layout preview (one 4.5-second transition per visibility cycle); improved robot materials/lighting appearance and added a restrained base ring. All hero copy/actions remain outside the canvas.
+- Added consistent rounded panels, discipline pills, spacing and subtle hover feedback. Saved content, settings, auth, uploads and database architecture retained. No new dependencies or environment variables.
+- Verification: lint, standalone typecheck and final production build passed. Headless Chrome at 1280/375px confirmed both disciplines, no horizontal overflow and no uncaught exceptions; screenshots reviewed. Reduced-motion test confirmed no canvas. Existing scene lazy-loading, hidden/offscreen pause and fallback retained. Contact token returns 403 on the temporary nonconfigured port 3140 as expected; contact behavior was not changed or verified by this visual check.
+- Temporary preview server/browser stopped. Next: review the updated local hero; deploy only when requested. PDF delivery setup from the earlier audit remains an external pending item.
+
+## Visual polish continuation (2026-10-13)
+
+- Finished mobile studio panel spacing, balanced hero headline wrapping and constrained role-control spacing.
+- Fixed the About card selector (Card renders a div, not an article). Added consistent rounded contact form framing and subtle footer shading.
+- Studio background/hover and footer tint now follow configured accent tokens instead of hardcoded cyan. Existing reduced-motion behavior retained.
+- Read bundled Next.js CSS guide before changes. Lint and production build, including TypeScript, passed. Prior desktop/mobile browser verification applies to the earlier layout; these final CSS refinements were not separately browser-tested.
+- No new configuration, dependencies, data mutations or deployment. Next: owner reviews the updated local design; external PDF delivery configuration remains pending from the upload audit.
