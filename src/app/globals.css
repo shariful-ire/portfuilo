@@ -463,3 +463,14 @@ header nav a:hover, header nav a:focus-visible {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
+
+@media (max-width: 639px) {
+  .section-listing-action {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    justify-content: center;
+    text-align: center;
+  }
+}

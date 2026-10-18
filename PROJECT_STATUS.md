@@ -727,3 +727,9 @@ README documents the new settings, Messages and Ideas workflows and repeatable v
 - Increased heading-to-underline padding from 14px to 20px.
 - Lint and production build/TypeScript passed. Chrome at 1280px/375px verified robotics-first hero/About order, centered mobile buttons, equal hero-panel side gutters, no horizontal overflow, keyboard/mobile menu and reduced-motion CSS. Mobile screenshot reviewed. Temporary server/browser closed; visit recording blocked.
 - No configuration changes or deployment. Next: owner mobile review; previous deployment credential rotation and dev-tool advisory remain applicable.
+
+## Mobile listing action alignment (2026-10-18)
+
+- Centered All projects/certificates/posts listing actions and legacy View all equivalents below 640px using a dedicated class. Desktop alignment and individual card links unchanged. All products already sits in a centered flex wrapper.
+- Production build including TypeScript and lint passed. This small CSS change was not separately browser-tested. No configuration/data changes or deployment.
+- Next: owner mobile review and deployment after the previously documented credential rotation.
