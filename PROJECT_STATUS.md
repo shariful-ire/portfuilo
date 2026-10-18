@@ -719,3 +719,11 @@ README documents the new settings, Messages and Ideas workflows and repeatable v
 - Expanded shared heading underlines by 180px total (90px each side), capped at the heading container width to prevent mobile overflow. Underlines remain above descriptions.
 - Added a slow repeating cyan/blue/lavender gradient animation; reduced-motion and disabled site animation settings retain a static line. Hero and form unchanged.
 - Production build/TypeScript passed. Chrome at 1280px/375px verified computed line width equals min(heading width + 180px, container width), placement above description, no overflow and existing focus/navigation/reduced-motion CSS checks. No configuration or deployment; prior security findings remain applicable. Next: owner review and deployment after credential rotation.
+
+## Mobile hero alignment and robotics-first ordering (2026-10-18)
+
+- Centered hero actions below 640px, made the single-column grid explicit with shrink-safe sizing, reduced its mobile gap and extended the decorative background across both mobile gutters to remove the abrupt right edge. Portrait dimensions and desktop layout preserved.
+- Reordered actual markup: Desk Bot/Robotics first, Web second in hero; IoT/Robotics focus before Web Development in About; robotics-first specialty chips. Saved content and dynamic section ordering unchanged.
+- Increased heading-to-underline padding from 14px to 20px.
+- Lint and production build/TypeScript passed. Chrome at 1280px/375px verified robotics-first hero/About order, centered mobile buttons, equal hero-panel side gutters, no horizontal overflow, keyboard/mobile menu and reduced-motion CSS. Mobile screenshot reviewed. Temporary server/browser closed; visit recording blocked.
+- No configuration changes or deployment. Next: owner mobile review; previous deployment credential rotation and dev-tool advisory remain applicable.

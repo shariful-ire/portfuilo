@@ -440,7 +440,7 @@ header nav a:hover, header nav a:focus-visible {
 .post-prose h3 { font-size: clamp(1.375rem, 2.5vw, 1.625rem); }
 .section-title-row {
   position: relative;
-  padding-bottom: 0.875rem;
+  padding-bottom: 1.25rem;
 }
 .section-title-row::after {
   content: "";

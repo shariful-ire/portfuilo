@@ -35,9 +35,9 @@ export default async function Home() {
       >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_80%_25%,#16363c_0%,transparent_55%)]"
+          className="pointer-events-none absolute inset-y-0 -inset-x-6 sm:inset-x-0 -z-10 bg-[radial-gradient(ellipse_at_80%_25%,#16363c_0%,transparent_55%)]"
         />
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14">
+        <div className="grid min-w-0 grid-cols-1 items-center gap-8 sm:gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14">
         <div className="min-w-0">
         <p className="mb-8 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-accent">
           {photo && <Image priority sizes="64px" src={photo.url} alt={photo.alt || profile.name} width={64} height={64} className="size-16 shrink-0 rounded-full border border-accent/30 object-cover object-top lg:hidden" />}
@@ -50,7 +50,7 @@ export default async function Home() {
         </p>
         {profile.availability && <p className="mt-5 text-sm text-accent">{profile.availability}</p>}
         
-        <div className="mt-10 flex flex-wrap gap-4">
+        <div className="hero-actions mt-10 flex flex-wrap justify-center gap-4 sm:justify-start">
           {projectsEnabled && <Link href="/projects" className={buttonStyles()}>
             Explore projects <span aria-hidden="true">↘</span>
           </Link>}
@@ -72,22 +72,22 @@ export default async function Home() {
           </div>
           <div className="mt-7 grid grid-cols-2 gap-3">
             <div className="overflow-hidden rounded-2xl border border-border bg-background/80 p-4">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-accent">01 / Web</p>
-              <WebPreview enabled={presentation.animations} />
-              <p className="text-sm font-medium">Web experiences</p><p className="mt-1 text-xs leading-5 text-muted">Interfaces. Interaction.</p>
-            </div>
-            <div className="overflow-hidden rounded-2xl border border-border bg-background/80 p-4">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-accent">02 / Hardware</p>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-accent">01 / Robotics</p>
               <HeroRobot enabled={presentation.animations} compactDisplay />
               <p className="text-sm font-medium">Desk Bot &amp; IoT</p><p className="mt-1 text-xs leading-5 text-muted">Code. Connect. Create.</p>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-border bg-background/80 p-4">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-accent">02 / Web</p>
+              <WebPreview enabled={presentation.animations} />
+              <p className="text-sm font-medium">Web experiences</p><p className="mt-1 text-xs leading-5 text-muted">Interfaces. Interaction.</p>
             </div>
           </div>
         </div>
         </div>
         <div className="mt-12 flex flex-wrap gap-3 font-mono text-xs text-muted [&>span]:rounded-full [&>span]:border [&>span]:border-border [&>span]:bg-surface/50 [&>span]:px-4 [&>span]:py-2">
-          <span>Frontend Development</span>
-          <span>Internet of Things</span>
           <span>Robotics</span>
+          <span>Internet of Things</span>
+          <span>Frontend Development</span>
         </div>
       </section>
       <section id="about" aria-labelledby="about-title" className="border-b border-border py-16 sm:py-24">
@@ -95,15 +95,15 @@ export default async function Home() {
         <p className="mt-6 max-w-3xl whitespace-pre-line text-base leading-8 text-muted sm:text-lg">{profile.biography || profile.introduction}</p>
         {(profile.city || profile.country) && <p className="mt-5 text-sm text-muted">Based in {[profile.city, profile.country].filter(Boolean).join(", ")}</p>}
         <div className="mt-10 grid gap-5 md:grid-cols-2">
-          {profile.webFocusTitle && <Card className="relative overflow-hidden border-t-2 border-t-accent bg-gradient-to-br from-elevated to-surface">
-            <span aria-hidden="true" className="mb-8 inline-flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 font-mono text-lg text-accent">&lt;/&gt;</span>
-            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">{profile.webFocusTitle}</h3>
-            {profile.webFocusDescription && <p className="mt-4 max-w-lg leading-7 text-muted">{profile.webFocusDescription}</p>}
-          </Card>}
           {profile.hardwareFocusTitle && <Card className="relative overflow-hidden border-t-2 border-t-sky-300 bg-gradient-to-br from-sky-950/30 to-surface">
             <span aria-hidden="true" className="mb-8 inline-flex size-12 items-center justify-center rounded-xl border border-sky-300/25 bg-sky-300/10 font-mono text-lg text-sky-200">{ "{ }" }</span>
             <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">{profile.hardwareFocusTitle}</h3>
             {profile.hardwareFocusDescription && <p className="mt-4 max-w-lg leading-7 text-muted">{profile.hardwareFocusDescription}</p>}
+          </Card>}
+          {profile.webFocusTitle && <Card className="relative overflow-hidden border-t-2 border-t-accent bg-gradient-to-br from-elevated to-surface">
+            <span aria-hidden="true" className="mb-8 inline-flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 font-mono text-lg text-accent">&lt;/&gt;</span>
+            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">{profile.webFocusTitle}</h3>
+            {profile.webFocusDescription && <p className="mt-4 max-w-lg leading-7 text-muted">{profile.webFocusDescription}</p>}
           </Card>}
         </div>
       </section>
