@@ -1,4 +1,5 @@
 import {HomeProducts} from "@/components/products/home-products";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { WebPreview } from "@/components/hero/web-preview";
 import { getPresentation } from "@/lib/settings/pages";
 import { HeroHeading } from "@/components/hero/hero-heading";
@@ -26,7 +27,7 @@ export default async function Home() {
   const projectsEnabled = presentation.pages.find((page) => page.path === "/projects")?.enabled;
   const github = contactActions(profile).find((action) => action.channel === "github");
   return (
-    <><AdminToolbar /><PageContainer>
+    <><AdminToolbar /><PageContainer className="portfolio-home">
       {unavailable && <p role="status" className="pt-5 text-sm text-muted">Saved profile updates are temporarily unavailable. Showing confirmed owner information.</p>}
       <section
         aria-labelledby="hero-title"
@@ -41,7 +42,7 @@ export default async function Home() {
         <p className="mb-8 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-accent">
           {photo && <Image priority sizes="64px" src={photo.url} alt={photo.alt || profile.name} width={64} height={64} className="size-16 shrink-0 rounded-full border border-accent/30 object-cover object-top lg:hidden" />}
           <span className="h-px w-8 bg-accent" />
-          {profile.name}
+          <span className="hero-owner-name">{profile.name}</span>
         </p>
         <HeroHeading headline={profile.headline} roles={presentation.roles} enabled={presentation.animations} />
         <p className="mt-8 max-w-2xl text-base leading-8 text-muted sm:text-lg">
@@ -90,8 +91,7 @@ export default async function Home() {
         </div>
       </section>
       <section id="about" aria-labelledby="about-title" className="border-b border-border py-16 sm:py-24">
-        <p className="section-eyebrow">About</p>
-        <h2 id="about-title" className="section-heading">At the intersection of web &amp; hardware.</h2>
+        <SectionHeading id="about-title" label="About" icon="about">At the intersection of web &amp; hardware.</SectionHeading>
         <p className="mt-6 max-w-3xl whitespace-pre-line text-base leading-8 text-muted sm:text-lg">{profile.biography || profile.introduction}</p>
         {(profile.city || profile.country) && <p className="mt-5 text-sm text-muted">Based in {[profile.city, profile.country].filter(Boolean).join(", ")}</p>}
         <div className="mt-10 grid gap-5 md:grid-cols-2">
@@ -108,8 +108,7 @@ export default async function Home() {
         </div>
       </section>
       {(profile.degree || profile.university || profile.department) && <section id="education" aria-labelledby="education-title" className="border-b border-border py-16 sm:py-24">
-        <p className="section-eyebrow">Education</p>
-        <h2 id="education-title" className="section-heading">Learning across software and hardware.</h2>
+        <SectionHeading id="education-title" label="Education" icon="timeline">Learning across software and hardware.</SectionHeading>
         <Card className="mt-10 border-l-2 border-l-accent">
           {profile.degree && <h3 className="max-w-3xl text-xl leading-relaxed font-medium sm:text-2xl">{profile.degree}</h3>}
           {profile.department && <p className="mt-3 leading-7 text-muted">{profile.department}</p>}
@@ -121,19 +120,11 @@ export default async function Home() {
       <section
         id="contact"
         aria-labelledby="contact-title"
-        className="py-16 sm:py-24"
+        className="py-12 sm:py-16"
       >
-        <p className="mb-4 font-mono text-xs uppercase tracking-widest text-accent">
-          Contact
-        </p>
-        <div className="flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
-          <div>
-            <h2
-              id="contact-title"
-              className="text-3xl font-semibold tracking-tight sm:text-4xl"
-            >
-              Get in touch.
-            </h2>
+        <div className="flex flex-col items-center gap-5 text-center [&>div:last-child]:justify-center">
+          <div className="w-full">
+            <SectionHeading id="contact-title" label="Contact" icon="contact">Get in touch.</SectionHeading>
             <p className="mt-4 text-muted">
               {profile.availability || "Find me through my public channels."}
             </p>

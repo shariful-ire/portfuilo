@@ -655,3 +655,67 @@ README documents the new settings, Messages and Ideas workflows and repeatable v
 - Checks completed: lint (unused verification variable fixed), standalone typecheck, 112 tests, production build and client-secret scan (38 files, eight configured sensitive values). Real isolated MongoDB verification passed concurrent deduplication, next-day/new-browser increments and persistence after reconnect; temporary database removed. Receipt TTL index was applied successfully during implementation.
 - Limits: actual Google-admin browser counter flow and production deployment have not been verified. Cookie deletion/different devices and undetected bots can increase counts; this is not unique-human analytics. Existing MongoDB/auth/CONTACT_FORM_SECRET/origin configuration is required, with no new variables.
 - Next: review the footer locally, verify signed-in admin exclusion in your browser, and deploy only when requested. No public deployment performed. Existing Cloudinary PDF-delivery configuration remains separate.
+
+## Final visual polish (2026-10-18)
+
+- Strengthened shared primary/secondary buttons with clearer borders, subtle gradients/shadows and keyboard focus rings. Project/article actions and homepage registry listing links now have distinct 44px-minimum action styling.
+- Added theme-aware cyan/blue depth to the hero studio, alternating homepage sections, cards and contact form. Improved navigation text emphasis, eyebrow markers, card focus/hover feedback and footer separation. Existing content, saved accent choices and reduced-motion settings are preserved.
+- Read bundled Next.js CSS guide. Lint and production build (including TypeScript) passed. Headless Chrome at 1280px and 375px verified no horizontal overflow, primary gradient styling, focus, mobile menu opening/Escape with focus inside navigation, and reduced-motion transition overrides. Desktop/mobile screenshots reviewed. Initial Escape harness used focus outside the header; corrected the harness and reran successfully. Temporary server/browser closed, visitor endpoint blocked to avoid counting verification traffic.
+- No new dependencies, secrets, configuration, content mutations or deployment. Existing business/authentication flows were not re-tested for this presentation-only change. Next: owner review of the polished local UI; deployment remains a separate action.
+
+## Section heading refinement and hero restoration (2026-10-18)
+
+- Responded to owner feedback by removing the last polish's hero-studio gradient/border/shadow override and excluding the hero from the new section border rule. Existing hero typography, portrait dimensions, placement and responsive layout remain unchanged.
+- Added a reusable server-rendered SectionHeading with decorative outline SVG icons, clear label hierarchy and responsive 26–40px headings. Applied to About, Education, Contact, homepage Products and all database-driven homepage sections; saved titles and semantic heading IDs retained. No new package or client JavaScript.
+- Lint and production build including TypeScript passed. Chrome checks at 1280px/375px passed horizontal overflow, focus, mobile navigation/Escape and reduced motion; Education screenshots captured and mobile reviewed. Visitor recording blocked during verification; temporary server/browser closed.
+- No configuration or data changes. Next: owner review of restored hero and refined headings. No deployment.
+
+## Centered, prominent section titles (2026-10-18)
+
+- Promoted labels such as Education/About/Contact/Products to the actual h2, with supporting phrases beneath. Shared heading size is now responsive 32–48px, bold, centered with the decorative icon above. Database-driven titles use the same hierarchy. Contact and product heading wrappers now span and center within their section. Hero and portrait sizing remain untouched.
+- Lint and production build with TypeScript passed. Chrome checks at 375px and 1280px passed overflow, keyboard/mobile navigation and reduced motion; mobile Education screenshot reviewed. Temporary server/browser closed; visit recording blocked.
+- No configuration requirements or data changes. Next: owner review of the larger centered titles. No deployment.
+
+## Inline heading icons and compact contact (2026-10-18)
+
+- Centered icons and section titles together in one flex row with responsive 12–16px spacing; supporting text remains below. Hero dimensions unchanged.
+- Centered the contact form at a 672px maximum width, centered its heading/actions, reduced section/panel/form spacing and textarea rows from seven to five. Name/email share a row on desktop and stack on mobile; subject/message remain full width. Validation/submission behavior unchanged.
+- Lint and production build including TypeScript passed. Chrome at 1280px/375px passed overflow, mobile navigation, focus and reduced-motion checks; contact desktop screenshot reviewed. Temporary server/browser closed and visitor recording blocked. No form submissions performed.
+- No configuration changes or deployment. Next: owner review of compact contact spacing.
+
+## Restore message form and emphasize owner name (2026-10-18)
+
+- Restored contact form's previous single-column fields, seven-row textarea, original padding/vertical spacing and left-aligned internal text/actions. Retained only centered panel placement and responsive max-width.
+- Enlarged hero owner name to responsive 16–22px bold text with a restrained cyan/blue/lavender gradient, solid-color fallback and forced-colors support. Hero portrait dimensions and main heading unchanged.
+- Lint and production build including TypeScript passed. Chrome desktop/mobile checks passed overflow, keyboard/mobile navigation and reduced motion. No submission flow or external integration changes; no new configuration or deployment.
+- Next: owner review of restored form and name emphasis.
+
+## Public page heading hierarchy and homepage underline (2026-10-18)
+
+- Standardized centered public index titles at 36–56px across About, Ideas, Products, Projects, Posts and Certificates. Enlarged the Collaborate/Products introductory label to 18–22px. Collaboration summaries now use the shared centered icon/title component. Detail-page section headings and article h2/h3 sizes increased while retaining reading alignment; dashboard/card controls unaffected.
+- Added a subtle gradient underline below homepage section headings. Animation runs only twice, with a static underline for reduced motion or disabled site animations. Hero/profile dimensions and restored contact form preserved.
+- Lint and production build with TypeScript passed. Chrome verified homepage desktop/mobile overflow, focus/navigation and reduced-motion CSS; Ideas, Projects, Certificates, Posts and Products mobile index headings centered with no overflow. About did not render a public index in current configuration, so its visual check was skipped after correcting the harness assumption. Temporary server/browser closed; no visit counts added.
+- No new dependencies/configuration, saved content changes or deployment. Next: owner review; About visual verification when enabled.
+
+## About availability repair (2026-10-18)
+
+- Confirmed root cause from live published settings: About had enabled=false and empty introduction/blocks. The route correctly returned 404 for a disabled page; this was not a layout failure.
+- Enabled only About's saved enabled flag with optimistic updatedAt matching and verified MongoDB readback. Navigation configuration and other saved content preserved.
+- About now falls back to the published profile biography/introduction and education when custom page content is empty. Custom page content retains precedence; profile read failure shows an honest status. Disabled-page authorization/public visibility policy remains intact.
+- Lint and production build with TypeScript passed. Temporary production server verified /about HTTP 200 and rendered saved university/education; server stopped. No public deployment. Existing hosted code needs deployment for the new profile fallback; the saved enabled flag is already updated.
+- Next: owner can edit About introduction/blocks in Dashboard Settings > Navigation & Pages; no new credentials required.
+
+## Final underline and pre-deployment review (2026-10-18)
+
+- Moved decorative underline from the heading group to the icon/title flex row. It spans the entire row, above descriptions. Animation changes gradient position only, preserving full width, runs twice on the homepage, and respects reduced motion/site animation settings. Shared headings elsewhere use the same static placement.
+- Production build/TypeScript and lint passed; 112 tests passed after correcting an outdated assertion that rejected trusted decorative SVG. Added explicit malicious SVG text fixture and verified it stays escaped, with only the nine expected trusted icons rendered.
+- Chrome at 1280px and 375px measured underline width equal to icon/title row width and placement above description; no old description underline, overflow, focus/mobile navigation or reduced-motion regressions. Temporary server/browser closed; visitor recording blocked.
+- Client secret scan passed: 38 browser output files, eight configured sensitive values. Git tracks only .env.example among env files. Shared admin session/Origin guards reviewed. This is scoped verification, not a complete penetration test or Git-history secret audit.
+- npm production audit: zero known vulnerabilities. Full audit: five high findings in development ESLint > fast-glob > micromatch > braces chain, GHSA-vfj7-8cjw-p6xm, no patched version listed. Did not apply npm's incompatible eslint-config-next 14 downgrade. README records finding and deployment prerequisites.
+- Before deployment: rotate previously disclosed MongoDB password, Google client secret and Cloudinary API secret; update private local/Vercel values and verify production origins/callback. After deployment verify actual admin/non-admin, upload and contact/inbox flows. Existing Cloudinary PDF delivery setting may still need enabling. No push or deployment performed.
+
+## Expanded gradient underline (2026-10-18)
+
+- Expanded shared heading underlines by 180px total (90px each side), capped at the heading container width to prevent mobile overflow. Underlines remain above descriptions.
+- Added a slow repeating cyan/blue/lavender gradient animation; reduced-motion and disabled site animation settings retain a static line. Hero and form unchanged.
+- Production build/TypeScript passed. Chrome at 1280px/375px verified computed line width equals min(heading width + 180px, container width), placement above description, no overflow and existing focus/navigation/reduced-motion CSS checks. No configuration or deployment; prior security findings remain applicable. Next: owner review and deployment after credential rotation.

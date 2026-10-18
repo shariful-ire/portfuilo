@@ -145,5 +145,8 @@ test("public section and associated record validation fail closed when an adapte
 test("all nine typed component renderers work and rich text/CTA text render as escaped content", () => {
  const processResult = spawnSync(process.execPath, ["--import", "tsx", "tests/fixtures/render-sections.ts"], { encoding: "utf8", timeout: 30000 });
  assert.equal(processResult.status, 0, processResult.stderr); const { types, html } = JSON.parse(processResult.stdout) as { types: string[]; html: string };
- assert.deepEqual(types.sort(), Object.keys(homepageSectionRegistry).sort()); assert.match(html, /&lt;script&gt;/); assert.doesNotMatch(html, /<script|<iframe|<svg|onerror=/i);
+ assert.deepEqual(types.sort(), Object.keys(homepageSectionRegistry).sort()); assert.match(html, /&lt;script&gt;/); assert.doesNotMatch(html, /<script|<iframe|<[^>]+\son(?:error|load)=/i);
+ // Each section has one trusted decorative SVG; user-provided SVG must stay text.
+ assert.equal((html.match(/<svg\b/g) || []).length, types.length);
+ assert.match(html, /&lt;svg onload=/);
 });
