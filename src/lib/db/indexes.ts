@@ -23,6 +23,9 @@ export const indexDefinitions: Record<CollectionName, IndexDescription[]> = {
 export async function ensureDatabaseIndexes() {
   const db = await getDatabase();
   for (const [name, indexes] of Object.entries(indexDefinitions)) await db.collection(name).createIndexes(indexes);
+  await db.collection("products").createIndexes([uniqueSlug, publishedOrder, { key: { status: 1, category: 1 }, name: "product_category" }]);
+  await db.collection("productOrders").createIndexes([{key:{createdAt:-1,_id:1},name:"orders_date"},{key:{status:1,createdAt:-1},name:"orders_status"}]);
+  await db.collection("productReviews").createIndexes([{key:{productId:1,status:1,createdAt:-1},name:"reviews_public"},{key:{status:1,createdAt:-1},name:"reviews_moderation"}]);
   await db.collection("mediaUploads").createIndexes([
     { key: { state: 1, createdAt: -1 }, name: "media_upload_state_date" },
     { key: { ownerId: 1, createdAt: -1 }, name: "media_upload_owner_date" },

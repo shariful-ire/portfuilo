@@ -4,7 +4,7 @@ import type { MediaItem } from "./list";
 const savedUploadSchema = z.object({
   id: z.uuid(),
   state: z.literal("ready"),
-  kind: z.enum(["image", "document"]),
+  kind: z.enum(["image", "document", "video"]),
   name: z.string().min(1),
   alt: z.string(),
   url: z.url().refine((value) => new URL(value).protocol === "https:"),

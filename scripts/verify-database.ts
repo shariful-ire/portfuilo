@@ -51,7 +51,7 @@ async function main() {
     assert.equal(await getPublicProject(pInput.slug), null);
     assert.equal(await getPublicPost(post.data.slug), null);
     assert.equal((await getPublicCertificates()).total, 0);
-    assert.equal((await publishedSitemap("https://example.com")).length, 5);
+    assert.equal((await publishedSitemap("https://example.com")).length, 6);
     project = await updateProject(project.id, { status: "published" }, project.updatedAt);
     stage = "publish content";
     post = await updatePost(post.id, { status: "published" }, post.updatedAt);
@@ -61,7 +61,7 @@ async function main() {
     assert.equal((await getPublicProject(project.data.slug))?.id, project.id);
     assert.equal((await getPublicPost(post.data.slug))?.id, post.id);
     assert.equal((await getPublicCertificates()).items[0]?.id, certificate.id);
-    assert.equal((await publishedSitemap("https://example.com")).length, 7);
+    assert.equal((await publishedSitemap("https://example.com")).length, 8);
     await assert.rejects(createProject(pInput)); // Existing slug, including drafts, stays unique.
     await assert.rejects(updateProject(project.id, { status: "draft" }, "2000-01-01T00:00:00.000Z"));
     const section = { kind: "sections" as const, data: { title: "Verification A", subtitle: "", displayOrder: 0, status: "published" as const, section: { type: "rich-text" as const, content: { blocks: [] } } } };

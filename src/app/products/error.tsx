@@ -1,0 +1,2 @@
+"use client";
+export default function ErrorPage({reset}:{reset:()=>void}){return <section className="mx-auto max-w-3xl px-6 py-20"><h1 className="text-2xl">Products temporarily unavailable</h1><p className="my-5 text-muted">We could not load saved product information. Please try again.</p><button onClick={reset} className="rounded border border-border px-4 py-3">Try again</button></section>;}

@@ -1,0 +1,12 @@
+import Link from "next/link";
+import {PageContainer} from "@/components/layout/page-container";
+import {ProductCard} from "@/components/products/product-card";
+import {listPublicProducts} from "@/lib/products/store";
+import {requirePublicPage} from "@/lib/settings/pages";
+import {publicMetadata} from "@/lib/seo/metadata";
+import {Input,fieldStyles} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+export const dynamic="force-dynamic";
+export async function generateMetadata(){return publicMetadata("/products","Products","Explore products, specifications and order requests.");}
+export default async function Page({searchParams}:{searchParams:Promise<{q?:string;category?:string;page?:string}>}){const config=await requirePublicPage('/products');const params=await searchParams;const q=typeof params.q==='string'?params.q.slice(0,100):'',category=typeof params.category==='string'?params.category.slice(0,200):'';const page=Math.min(10000,Math.max(1,Number(params.page)||1))|0;const {items,count,categories}=await listPublicProducts(q,category,page);const href=(n:number)=>'/products?'+new URLSearchParams({q,category,page:String(n)});
+return <PageContainer className="py-14"><p className="section-eyebrow">Products</p><h1 className="section-heading">{config.title}</h1><p className="mt-5 max-w-2xl leading-7 text-muted">{config.introduction||"Explore the details, see how each product works, and send an order request. Payment and delivery are arranged after we discuss your request."}</p><form className="my-8 grid items-end gap-4 sm:grid-cols-[1fr_1fr_auto]"><label>Search products<Input name="q" defaultValue={q} maxLength={100}/></label><label>Category<select name="category" defaultValue={category} className={fieldStyles}><option value="">All categories</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label><Button type="submit">Find products</Button></form><div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{items.map(p=><ProductCard key={p.id} product={p}/>)}</div>{!items.length&&<div className="rounded-2xl border border-border p-10 text-muted">{q||category?'No products match these filters.':'No products published yet. Please check back for launches.'}</div>}<nav aria-label="Product pages" className="mt-8 flex gap-6">{page>1&&<Link href={href(page-1)}>Previous</Link>}{page*12<count&&<Link href={href(page+1)}>Next</Link>}</nav></PageContainer>;}

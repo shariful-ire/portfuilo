@@ -622,3 +622,26 @@ README documents the new settings, Messages and Ideas workflows and repeatable v
 - Checks: standalone typecheck, 102 tests and production build passed. No Google-authenticated browser editor flow was performed. README updated; no new configuration/indexes/dependencies. No deployment.
 - Next: use Dashboard > Settings > Additional contact links, then Save and publish settings. Deploy the new application code separately for hosted use.
 - Lint also completed with exit code 0; the first run was slow in the restricted sandbox.
+
+## Product catalog, order requests and review moderation (2026-10-18)
+
+### Implemented
+- Dynamic `/products` catalog with search/category filtering/pagination, responsive cards and `/products/[slug]` pages. Published-only reads, draft noindex/not-found, per-product metadata, published sitemap entries and homepage product highlights. Products page settings migrate safely into existing presentation settings; header switches to mobile navigation earlier to accommodate the added link.
+- Protected Dashboard Products CRUD with unique editable slug, title/summary/description/category, optional BDT/USD price, availability, image gallery/alt text/order, MP4 video, feature/specification fields, optional shipping/warranty/returns, display order and draft/published status. Deletes retain uploads and historical order/review records. Optimistic timestamps, transactional slug/media locks and reference-safe deletion retained.
+- Extended existing authorized Cloudinary upload proxy to MP4 (4 MiB): MIME/byte signature checks, one-use ticket, server credentials, video resource metadata, preview/progress and correct video deletion. Product media references, including drafts, participate in deletion protection and older-media lookup.
+- Customer order requests (chosen by owner): name/email/phone/address/quantity/notes/consent, server validation, rate limits, honeypot, signed tokens and transactional replay protection. Prices/title/product identity captured server-side. No payment, stock reservation, automatic confirmation or notifications implied. Protected paginated order inbox with details, filters, statuses and confirmed deletion.
+- Customer review submissions require publication consent and start pending. Protected review inbox supports explicit approval confirmation, rejection/unpublishing and deletion. Public projection excludes emails; approved reviews are not labelled verified purchases. User content is plain text.
+- No invented products, prices, stock levels, guarantees or reviews. Only indexes were added to the owner database. README and environment example document workflow/configuration.
+
+### Verification
+- 107 regression tests passed, including product validation, price/status spoof rejection, private reviews, legacy navigation and MP4 policy. Updated existing expected navigation/reference coverage for products.
+- Lint and standalone typecheck passed. Production build passed with all catalog, dashboard and API routes. Client secret scan passed (38 client files, eight configured sensitive values).
+- Live db:indexes passed. `scripts/verify-products.ts` verified published/draft reads, media resolution, real order persistence, replay rollback, immutable order price/title snapshots, unavailable-product rejection, pending/approved review visibility and public email exclusion in a uniquely named isolated database; removed afterward. First long test database name was incompatible with the environment; short names resolved it.
+- Isolated production HTTP verification passed listing/detail rendering, private data exclusion, anonymous admin CRUD/upload rejection, order POST 201 then replay 409, and draft direct URL/noindex. Temporary server/database removed.
+- Headless Chrome at 1280px and 375px passed no overflow, unchecked consent, quantity bound and full-size image dialog/Escape. Mobile screenshot reviewed. These used temporary fixtures and an existing public image as a rendering reference; no real products were seeded.
+- Generated a tiny MP4 test clip locally: file validation, actual Cloudinary video upload/resource metadata, public HTTP 200 and deletion all passed. No test video left in Cloudinary.
+
+### Limits and next step
+- Actual Google-admin browser product CRUD and order/review status updates remain unverified end-to-end; shared authorization tests and anonymous endpoint checks are verified. Provider test is not a claim of an authenticated browser upload flow.
+- Existing MongoDB/Google/Cloudinary/CONTACT_* configuration applies. MP4s are capped at 4 MiB; larger videos require a future upload architecture change. Captions/transcription are not generated; provide equivalent product text. Prior PDF-delivery setting remains an independent external item.
+- Next: sign in, add real product information/media, publish it, submit a genuine test order and review through the UI, and inspect the protected inboxes. Deployment remains unrequested and was not performed.

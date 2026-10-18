@@ -50,7 +50,7 @@ export function MediaManager({ items, onChange, configured, disabled, onBusy, ki
         xhr.onload = () => {
           let result; try { result = JSON.parse(xhr.responseText); } catch { reject(new Error("Upload failed. The server or hosting provider rejected the request.")); return; }
           if (xhr.status >= 200 && xhr.status < 300) {
-            try { resolve(confirmedUpload(result, ticket.id, file.type === "application/pdf" ? "document" : "image")); } catch (failure) { reject(failure); }
+            try { resolve(confirmedUpload(result, ticket.id, file.type === "video/mp4" ? "video" : file.type === "application/pdf" ? "document" : "image")); } catch (failure) { reject(failure); }
           } else reject(new Error(result.message || "Upload failed."));
         };
         xhr.send(file);
@@ -78,24 +78,24 @@ export function MediaManager({ items, onChange, configured, disabled, onBusy, ki
   return <section aria-labelledby={`${id}-title`} className="space-y-5 rounded-2xl border border-border p-6">
     <h3 id={`${id}-title`} className="text-xl font-semibold">{title}</h3>
     {!configured && <p role="status" className="text-amber-200">Uploads are unavailable. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in the server environment and restart.</p>}
-    {kind !== "image" && <p className="text-sm leading-6 text-muted">If a saved PDF link returns 401 or 403, open Cloudinary Console → Settings → Security and enable “Allow delivery of PDF and ZIP files”, then check the link again.</p>}
-    <p className="text-sm leading-6 text-muted">{kind === "image" ? "JPEG, PNG, or WebP up to 5 MiB." : kind === "document" ? "Optional PDF up to 10 MiB." : "JPEG, PNG, or WebP up to 5 MiB; PDF up to 10 MiB."} Files are intended for public use. Replacing a selection keeps the old asset until you explicitly delete it.</p>
+    {(!kind || kind === "document") && <p className="text-sm leading-6 text-muted">If a saved PDF link returns 401 or 403, open Cloudinary Console → Settings → Security and enable “Allow delivery of PDF and ZIP files”, then check the link again.</p>}
+    <p className="text-sm leading-6 text-muted">{kind === "video" ? "MP4 video up to 4 MiB. Use a short compressed clip and provide a text description." : kind === "image" ? "JPEG, PNG, or WebP up to 5 MiB." : kind === "document" ? "Optional PDF up to 10 MiB." : "JPEG, PNG, or WebP up to 5 MiB; PDF up to 10 MiB."} Files are intended for public use. Replacing a selection keeps the old asset until you explicitly delete it.</p>
     <fieldset disabled={!configured || busy || disabled} className="space-y-4 disabled:opacity-60">
-      <div><label htmlFor={`${id}-file`} className="mb-2 block text-sm">{kind === "image" ? "Choose image" : kind === "document" ? "Choose PDF" : "Choose image or PDF"}</label><input ref={fileInput} id={`${id}-file`} className="block w-full min-w-0 rounded-lg border border-border p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-3 file:py-2 file:font-medium file:text-background" type="file" accept={kind === "image" ? "image/jpeg,image/png,image/webp" : kind === "document" ? "application/pdf" : "image/jpeg,image/png,image/webp,application/pdf"} onChange={(event) => {
+      <div><label htmlFor={`${id}-file`} className="mb-2 block text-sm">{kind === "video" ? "Choose MP4 video" : kind === "image" ? "Choose image" : kind === "document" ? "Choose PDF" : "Choose image or PDF"}</label><input ref={fileInput} id={`${id}-file`} className="block w-full min-w-0 rounded-lg border border-border p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-3 file:py-2 file:font-medium file:text-background" type="file" accept={kind === "video" ? "video/mp4" : kind === "image" ? "image/jpeg,image/png,image/webp" : kind === "document" ? "application/pdf" : "image/jpeg,image/png,image/webp,application/pdf"} onChange={(event) => {
         const selected = event.target.files?.[0] ?? null;
         setMessage(""); setError("");
         if (selected) {
-          if ((kind === "image" && selected.type === "application/pdf") || (kind === "document" && selected.type !== "application/pdf")) {
-            setFile(null); setPreview(""); setError(kind === "image" ? "Choose a JPEG, PNG, or WebP image here." : "Choose a PDF here."); return;
+          if ((kind === "image" && !selected.type.startsWith("image/")) || (kind === "document" && selected.type !== "application/pdf") || (kind === "video" && selected.type !== "video/mp4")) {
+            setFile(null); setPreview(""); setError(kind === "image" ? "Choose a JPEG, PNG, or WebP image here." : kind === "video" ? "Choose an MP4 here." : "Choose a PDF here."); return;
           }
           const checked = uploadInputSchema.safeParse({ name: selected.name, mime: selected.type, size: selected.size, alt: "Preview" });
           if (!checked.success) { setFile(null); setPreview(""); setError(checked.error.issues.map((issue) => issue.message).join(" ")); return; }
         }
         setFile(selected); setPreview(selected ? URL.createObjectURL(selected) : "");
       }} /></div>
-      {kind !== "document" && <div><label htmlFor={`${id}-alt`} className="mb-2 block text-sm">Image description (required for images)</label><Input id={`${id}-alt`} value={alt} maxLength={500} onChange={(event) => setAlt(event.target.value)} /></div>}
-      {file && preview && (file.type.startsWith("image/") ? <Image unoptimized src={preview} alt={alt || "Selected file preview"} width={240} height={160} className="max-h-48 rounded-lg object-contain" /> : <a href={preview} download={file.name} className="text-accent">Preview PDF: {file.name} ({Math.ceil(file.size / 1024)} KiB)</a>)}
-      <Button disabled={!file} onClick={upload}>{kind === "image" ? "Upload image" : kind === "document" ? "Upload PDF" : "Upload file"}</Button>
+      {kind !== "document" && <div><label htmlFor={`${id}-alt`} className="mb-2 block text-sm">Image / video description (required)</label><Input id={`${id}-alt`} value={alt} maxLength={500} onChange={(event) => setAlt(event.target.value)} /></div>}
+      {file && preview && (file.type.startsWith("image/") ? <Image unoptimized src={preview} alt={alt || "Selected file preview"} width={240} height={160} className="max-h-48 rounded-lg object-contain" /> : file.type === "video/mp4" ? <video controls preload="metadata" src={preview} aria-label={alt || "Selected video preview"} className="max-h-48 w-full" /> : <a href={preview} download={file.name} className="text-accent">Preview PDF: {file.name} ({Math.ceil(file.size / 1024)} KiB)</a>)}
+      <Button disabled={!file} onClick={upload}>{kind === "video" ? "Upload video" : kind === "image" ? "Upload image" : kind === "document" ? "Upload PDF" : "Upload file"}</Button>
     </fieldset>
     {busy && <div role="status"><progress value={progress} max={100} className="w-full" aria-label="File transfer progress" /><p className="mt-2 text-sm">{progress === 100 ? "Transfer complete. Processing and saving…" : "Operation in progress…"}</p></div>}
     {error && <p role="alert" className="text-sm text-red-300">{error}</p>}{message && <p role="status" className="text-sm text-accent">{message}</p>}

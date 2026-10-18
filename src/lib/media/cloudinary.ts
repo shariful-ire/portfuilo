@@ -12,13 +12,13 @@ export function cloudinaryServer() {
   return { sdk: cloudinary, env: env.data };
 }
 export function uploadParameters(id: string, mime: string, timestamp: number) {
-  const allowed_formats: UploadApiOptions["allowed_formats"] = mime === "application/pdf" ? ["pdf"] : ["jpg", "jpeg", "png", "webp"];
-  return { public_id: `portfolio/${id}`, timestamp, overwrite: false, allowed_formats };
+  const allowed_formats: UploadApiOptions["allowed_formats"] = mime === "video/mp4" ? ["mp4"] : mime === "application/pdf" ? ["pdf"] : ["jpg", "jpeg", "png", "webp"];
+  return { resource_type: (mime === "video/mp4" ? "video" : "image") as "video" | "image", public_id: `portfolio/${id}`, timestamp, overwrite: false, allowed_formats };
 }
 export async function uploadToCloudinary(bytes: Buffer, params: ReturnType<typeof uploadParameters>) {
   const { sdk } = cloudinaryServer();
   return new Promise<UploadApiResponse>((resolve, reject) => {
-    const stream = sdk.uploader.upload_stream({ ...params, resource_type: "image", timeout: 60_000 }, (error, result) => {
+    const stream = sdk.uploader.upload_stream({ ...params, timeout: 60_000 }, (error, result) => {
       if (error || !result) reject(new RequestError("Cloudinary upload failed. The upload record was retained for cleanup. Check Cloudinary configuration and try again.", 502));
       else resolve(result);
     });
@@ -26,8 +26,8 @@ export async function uploadToCloudinary(bytes: Buffer, params: ReturnType<typeo
     stream.end(bytes);
   });
 }
-export async function destroyCloudinary(publicId: string) {
+export async function destroyCloudinary(publicId: string, resourceType: "image" | "video" = "image") {
   const { sdk } = cloudinaryServer();
-  const result = await sdk.uploader.destroy(publicId, { resource_type: "image", invalidate: true });
+  const result = await sdk.uploader.destroy(publicId, { resource_type: resourceType, invalidate: true });
   if (!["ok", "not found"].includes(result.result)) throw new RequestError("Cloudinary deletion failed. The asset is retained for retry.", 502);
 }

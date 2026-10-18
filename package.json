@@ -12,7 +12,8 @@
     "db:check": "node --conditions=react-server --import tsx scripts/database.ts",
     "db:indexes": "node --conditions=react-server --import tsx scripts/database.ts --indexes",
     "check:client-secrets": "node --import tsx scripts/check-client-secrets.ts",
-    "db:verify": "node --conditions=react-server --import tsx scripts/verify-database.ts"
+    "db:verify": "node --conditions=react-server --import tsx scripts/verify-database.ts",
+    "db:verify-products": "node --conditions=react-server --import tsx scripts/verify-products.ts"
   },
   "engines": {
     "node": ">=22.0.0"

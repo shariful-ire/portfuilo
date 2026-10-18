@@ -3,7 +3,7 @@ import { sectionMediaIds } from "../home-manager/schema";
 import { requireAdmin } from "../auth/admin";
 import { uploads } from "./storage";
 import { getCollection } from "../db/collections";
-export type MediaItem = { id: string; name: string; kind: "image" | "document"; state: string; url?: string; alt: string };
+export type MediaItem = { id: string; name: string; kind: "image" | "document" | "video"; state: string; url?: string; alt: string };
 export async function listAdminMedia(): Promise<MediaItem[]> {
   await requireAdmin();
   const records = await (await uploads()).find({ state: { $ne: "deleted" } }).sort({ createdAt: -1 }).limit(100).toArray();
@@ -16,8 +16,9 @@ export async function listAdminMedia(): Promise<MediaItem[]> {
     (await getCollection("posts")).find({}, { projection: { coverMediaId: 1 } }).toArray(),
     (await getCollection("homepageSections")).find({}, { projection: { section: 1 } }).toArray(),
   ]);
-  const referenced = [...sections.flatMap((item) => sectionMediaIds(item.section)), ...posts.map((item) => item.coverMediaId), ...projects.flatMap((item) => [...(item.mediaIds ?? []), item.thumbnailId, ...(item.gallery ?? []).map((image) => image.mediaId)]), ...certificates.flatMap((item) => [item.mediaId, item.pdfMediaId]), ...profiles.flatMap((item) => [item.photoMediaId, item.cvMediaId]), ...settings.flatMap((item) => [item.sharingMediaId, item.presentation?.logoId, item.presentation?.lightLogoId, item.presentation?.darkLogoId, item.presentation?.faviconId])].filter((id): id is string => !!id && !records.some((record) => record._id === id));
+  const productRecords = await (await import("../products/store")).products().then(c=>c.find({}, {projection:{images:1,videoId:1}}).toArray());
+  const referenced = [...productRecords.flatMap(p=>[...p.images.map(i=>i.mediaId),p.videoId]),...sections.flatMap((item) => sectionMediaIds(item.section)), ...posts.map((item) => item.coverMediaId), ...projects.flatMap((item) => [...(item.mediaIds ?? []), item.thumbnailId, ...(item.gallery ?? []).map((image) => image.mediaId)]), ...certificates.flatMap((item) => [item.mediaId, item.pdfMediaId]), ...profiles.flatMap((item) => [item.photoMediaId, item.cvMediaId]), ...settings.flatMap((item) => [item.sharingMediaId, item.presentation?.logoId, item.presentation?.lightLogoId, item.presentation?.darkLogoId, item.presentation?.faviconId])].filter((id): id is string => !!id && !records.some((record) => record._id === id));
   if (referenced.length) records.push(...await (await uploads()).find({ _id: { $in: referenced }, state: { $ne: "deleted" } }).toArray());
   const assets = await (await getCollection("media")).find({ _id: { $in: records.map((record) => record._id) } }).toArray();
-  return records.map((record) => ({ id: record._id, name: record.input.name, kind: record.input.mime === "application/pdf" ? "document" : "image", state: record.state, url: assets.find((asset) => asset._id === record._id)?.url, alt: record.input.alt }));
+  return records.map((record) => ({ id: record._id, name: record.input.name, kind: record.input.mime === "video/mp4" ? "video" : record.input.mime === "application/pdf" ? "document" : "image", state: record.state, url: assets.find((asset) => asset._id === record._id)?.url, alt: record.input.alt }));
 }

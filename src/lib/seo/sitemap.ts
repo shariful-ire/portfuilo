@@ -25,6 +25,11 @@ export async function publishedSitemap(origin: string) {
     const entries = sitemapEntries(origin, projects, posts).filter((entry) => !disabled.some((path) => entry.url === origin + path || entry.url.startsWith(origin + path + "/")));
     if (presentation.pages.find((page) => page.path === "/about")?.enabled) entries.push({ url: origin + "/about", lastModified: undefined });
     if (presentation.pages.find((page) => page.path === "/ideas")?.enabled) entries.push({ url: origin + "/ideas", lastModified: undefined });
+    if (presentation.pages.find(page=>page.path==="/products")?.enabled) {
+      entries.push({url:origin+"/products",lastModified:undefined});
+      for(const record of await read("products")) {const parsed=entry.parse(record);entries.push({url:`${origin}/products/${parsed.slug}`,lastModified:parsed.updatedAt.toISOString()});}
+    }
+    if(entries.length>50000)throw new Error("Sitemap splitting required");
     return entries;
   } catch { throw new DatabaseUnavailableError(); }
 }

@@ -74,9 +74,9 @@ async function fakeDatabase(client: unknown, run: () => Promise<void>) {
 test("deletion reference scan includes draft profile, sharing, project, certificate, post and gallery references", async () => {
   const checked: string[] = [];
   const session = {} as ClientSession;
-  await fakeDatabase({ db: () => ({ collection: (name: string) => ({ findOne: async (filter: object) => { checked.push(name); assert.ok(!("status" in filter)); if (name === "projects") assert.deepEqual(filter, { $or: [{ mediaIds: "asset-id" }, { thumbnailId: "asset-id" }, { "gallery.mediaId": "asset-id" }] }); if (name === "certificates") assert.deepEqual(filter, { $or: [{ mediaId: "asset-id" }, { pdfMediaId: "asset-id" }] }); return name === "homepageSections" ? { _id: "reference" } : null; } }) }) }, async () => {
+  await fakeDatabase({ db: () => ({ collection: (name: string) => ({ findOne: async (filter: object) => { checked.push(name); assert.ok(!("status" in filter)); if (name === "products") assert.deepEqual(filter, { $or: [{ "images.mediaId": "asset-id" }, { videoId: "asset-id" }] }); if (name === "projects") assert.deepEqual(filter, { $or: [{ mediaIds: "asset-id" }, { thumbnailId: "asset-id" }, { "gallery.mediaId": "asset-id" }] }); if (name === "certificates") assert.deepEqual(filter, { $or: [{ mediaId: "asset-id" }, { pdfMediaId: "asset-id" }] }); return name === "homepageSections" ? { _id: "reference" } : null; } }) }) }, async () => {
     assert.equal(await isReferenced("asset-id", session), true);
-    assert.deepEqual(checked, ["profiles", "siteSettings", "projects", "certificates", "posts", "homepageSections"]);
+    assert.deepEqual(checked, ["products", "profiles", "siteSettings", "projects", "certificates", "posts", "homepageSections"]);
   });
 });
 test("reference writers lock only ready uploads, preventing save/deletion races", async () => {

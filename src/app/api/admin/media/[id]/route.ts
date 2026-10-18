@@ -29,12 +29,12 @@ export async function PUT(request: Request, context: Context) {
     if (!claim.modifiedCount) throw new RequestError("Upload authorization has expired or was already used.", 409);
     claimedId = id;
     const result = await uploadToCloudinary(bytes, uploadParameters(id, intent.input.mime, intent.timestamp));
-    const allowed = { "image/jpeg": ["jpg", "jpeg"], "image/png": ["png"], "image/webp": ["webp"], "application/pdf": ["pdf"] };
+    const allowed = { "image/jpeg": ["jpg", "jpeg"], "image/png": ["png"], "image/webp": ["webp"], "application/pdf": ["pdf"], "video/mp4": ["mp4"] };
     const { env } = cloudinaryServer();
     const url = new URL(result.secure_url);
-    if (result.public_id !== `portfolio/${id}` || result.resource_type !== "image" || !allowed[intent.input.mime].includes(result.format) || result.bytes > intent.input.size || url.protocol !== "https:" || url.hostname !== "res.cloudinary.com" || !url.pathname.startsWith(`/${env.CLOUDINARY_CLOUD_NAME}/`)) throw new RequestError("Cloudinary returned unexpected media metadata. Delete this failed upload before retrying.", 502);
+    if (result.public_id !== `portfolio/${id}` || result.resource_type !== (intent.input.mime === "video/mp4" ? "video" : "image") || !allowed[intent.input.mime].includes(result.format) || result.bytes > intent.input.size || url.protocol !== "https:" || url.hostname !== "res.cloudinary.com" || !url.pathname.startsWith(`/${env.CLOUDINARY_CLOUD_NAME}/`)) throw new RequestError("Cloudinary returned unexpected media metadata. Delete this failed upload before retrying.", 502);
     const now = new Date();
-    const media = mediaSchema.parse({ _id: id, createdAt: now, updatedAt: now, status: "draft", displayOrder: 0, provider: "cloudinary", providerKey: result.public_id, url: result.secure_url, kind: intent.input.mime === "application/pdf" ? "document" : "image", mimeType: intent.input.mime, bytes: result.bytes, width: result.width || undefined, height: result.height || undefined, alt: intent.input.alt, originalFilename: intent.input.name });
+    const media = mediaSchema.parse({ _id: id, createdAt: now, updatedAt: now, status: "draft", displayOrder: 0, provider: "cloudinary", providerKey: result.public_id, url: result.secure_url, kind: intent.input.mime === "video/mp4" ? "video" : intent.input.mime === "application/pdf" ? "document" : "image", mimeType: intent.input.mime, bytes: result.bytes, width: result.width || undefined, height: result.height || undefined, alt: intent.input.alt, originalFilename: intent.input.name });
     await transaction(async (session) => {
       const commit = await store.updateOne({ _id: id, state: "uploading" }, { $set: { state: "ready", updatedAt: now } }, { session });
       if (!commit.modifiedCount) throw new RequestError("Upload state changed. Refresh the media list.", 409);
@@ -66,7 +66,8 @@ export async function DELETE(request: Request, context: Context) {
       await (await getCollection("media")).updateOne({ _id: id }, { $set: { status: "draft", updatedAt: new Date() } }, { session });
     });
     // Fixed server-owned public ID, never a client URL or arbitrary provider key.
-    await destroyCloudinary(`portfolio/${id}`);
+    const deleting = await store.findOne({ _id: id });
+    await destroyCloudinary(`portfolio/${id}`, deleting?.input.mime === "video/mp4" ? "video" : "image");
     await transaction(async (session) => {
       await (await getCollection("media")).deleteOne({ _id: id }, { session });
       await store.updateOne({ _id: id, state: "deleting" }, { $set: { state: "deleted", updatedAt: new Date() } }, { session });

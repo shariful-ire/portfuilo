@@ -1,3 +1,4 @@
+import {HomeProducts} from "@/components/products/home-products";
 import { WebPreview } from "@/components/hero/web-preview";
 import { getPresentation } from "@/lib/settings/pages";
 import { HeroHeading } from "@/components/hero/hero-heading";
@@ -116,6 +117,7 @@ export default async function Home() {
         </Card>
       </section>}
       <HomeSections />
+      <HomeProducts />
       <section
         id="contact"
         aria-labelledby="contact-title"

@@ -6,7 +6,7 @@ import { settingsDefaults, settingsInputSchema } from "../src/lib/settings/schem
 test("presentation defaults preserve existing public pages and never configure admin routes", () => {
   const data = parsePresentation(settingsDefaults.presentationJson);
   assert.equal(data.pages.find((page) => page.path === "/about")?.enabled, false);
-  assert.deepEqual(configuredNavigation(data).map((item) => item.href), ["/#about", "/projects", "/certificates", "/posts", "/ideas", "/#contact"]);
+  assert.deepEqual(configuredNavigation(data).map((item) => item.href), ["/#about", "/projects", "/certificates", "/posts", "/ideas", "/products", "/#contact"]);
   for (const path of ["/dashboard", "/api/auth", "javascript:alert(1)", "https://example.com"]) {
     assert.equal(presentationSchema.safeParse({ ...data, pages: [{ ...data.pages[0], path }, ...data.pages.slice(1)] }).success, false);
   }
@@ -14,6 +14,7 @@ test("presentation defaults preserve existing public pages and never configure a
 test("navigation respects saved order, hidden items, and disabled pages", () => {
   const data = structuredClone(presentationDefaults);
   data.pages.reverse();
+  data.pages.find((page) => page.path === "/products")!.inNavigation = false;
   data.pages.find((page) => page.path === "/ideas")!.inNavigation = false;
   data.pages.find((page) => page.path === "/posts")!.label = "Articles";
   data.pages.find((page) => page.path === "/projects")!.enabled = false;
