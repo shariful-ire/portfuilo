@@ -441,6 +441,14 @@ Custom links appear beside built-in channels in the homepage Contact section and
 
 The owner's supplied LinkedIn profile and Facebook profile were saved to MongoDB on 2026-10-18 and read back successfully. The new dynamic editor/public rendering requires the updated application code to be deployed for hosted use.
 
+## Portfolio visit counter
+
+The public footer shows cumulative browser visits, counting once per browser per UTC day. This is not a count of unique people. Verified, signed-in admin visits are excluded using the server session and configured `ADMIN_EMAIL`; visits while logged out cannot be recognized as yours. Dashboard and authentication pages do not trigger the counter.
+
+The counter uses MongoDB transactions, signed HttpOnly/SameSite cookies (Secure in production), and daily HMAC receipts with a three-day TTL. The aggregate total persists. No raw IP or email is stored in visitor records. Clearing cookies, using another device, and undetected bots can increase counts. Known crawler user agents are excluded; this is not a full analytics or bot-detection service.
+
+Existing MongoDB, Google authentication, `CONTACT_FORM_SECRET`, and `CONTACT_PUBLIC_ORIGIN` (or `BETTER_AUTH_URL`) configuration is required; no new secrets. Run `npm run db:indexes` to create the receipt expiry index. Authentication/database failures show an unavailable state instead of a fabricated count. The counter starts with new visits; historical visits are not reconstructed. Run `node --conditions=react-server --import tsx scripts/verify-visits.ts` to verify concurrency and persistence in an isolated temporary database that is removed afterward.
+
 ## Products, order requests and reviews
 
 Open **Dashboard > Products > Add product**. Set title, unique editable slug, category, summary, description and optional price/currency (BDT or USD). An empty price displays Contact for pricing. Prices are stored as integer minor units. Upload/select up to 15 images with alt text; the first image is the card cover, and Move up changes gallery order. Add an optional MP4, feature list and specification name/value rows. Shipping, warranty and returns text is optional: only your configured terms appear publicly. Set display order, availability and Draft/Published, then Save product. No sample products, reviews or guarantees are seeded.

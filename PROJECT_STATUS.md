@@ -645,3 +645,13 @@ README documents the new settings, Messages and Ideas workflows and repeatable v
 - Actual Google-admin browser product CRUD and order/review status updates remain unverified end-to-end; shared authorization tests and anonymous endpoint checks are verified. Provider test is not a claim of an authenticated browser upload flow.
 - Existing MongoDB/Google/Cloudinary/CONTACT_* configuration applies. MP4s are capped at 4 MiB; larger videos require a future upload architecture change. Captions/transcription are not generated; provide equivalent product text. Prior PDF-delivery setting remains an independent external item.
 - Next: sign in, add real product information/media, publish it, submit a genuine test order and review through the UI, and inspect the protected inboxes. Deployment remains unrequested and was not performed.
+
+## Portfolio visitor counter (2026-10-18)
+
+- Added a public footer counter backed by MongoDB. Counts once per signed browser identity per UTC day; cumulative visits, not unique people. No historical counts or fake seed values.
+- Verified signed-in admins are excluded through the existing server authorization helper. Browser email/role cannot bypass this check. Logged-out admin visits cannot be identified. Unexpected authentication errors fail closed.
+- Signed HttpOnly/SameSite cookie, Secure on HTTPS; atomic receipt/increment transaction handles concurrent requests. Daily HMAC receipts expire after three days; total persists. Visitor records contain no raw email/IP. Known bot filtering, exact Origin checks and Mongo-backed rate limits reuse existing protection.
+- Public route allowlist excludes dashboard/auth routes. Loading and unavailable states avoid displaying fabricated counts. README documents counting semantics and existing configuration requirements.
+- Checks completed: lint (unused verification variable fixed), standalone typecheck, 112 tests, production build and client-secret scan (38 files, eight configured sensitive values). Real isolated MongoDB verification passed concurrent deduplication, next-day/new-browser increments and persistence after reconnect; temporary database removed. Receipt TTL index was applied successfully during implementation.
+- Limits: actual Google-admin browser counter flow and production deployment have not been verified. Cookie deletion/different devices and undetected bots can increase counts; this is not unique-human analytics. Existing MongoDB/auth/CONTACT_FORM_SECRET/origin configuration is required, with no new variables.
+- Next: review the footer locally, verify signed-in admin exclusion in your browser, and deploy only when requested. No public deployment performed. Existing Cloudinary PDF-delivery configuration remains separate.

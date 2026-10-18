@@ -32,5 +32,6 @@ export async function ensureDatabaseIndexes() {
   ]);
   await db.collection("contactRateLimits").createIndex({ expiresAt: 1 }, { name: "contact_rate_expiry", expireAfterSeconds: 0 });
   await db.collection("contactReceipts").createIndex({ expiresAt: 1 }, { name: "contact_receipt_expiry", expireAfterSeconds: 0 });
+  await db.collection("visitReceipts").createIndex({expiresAt:1},{name:"visit_receipt_expiry",expireAfterSeconds:0});
   // No TTL: failed/pending records must survive for remote orphan cleanup.
 }
