@@ -1,3 +1,4 @@
+import { customContactLinksJsonSchema } from "../contact/custom-links";
 import { presentationJsonSchema } from "./presentation";
 import { contactEmail, whatsappValue, telegramValue, githubValue, linkedinValue, optionalContact } from "../contact/links";
 import { z } from "zod";
@@ -7,6 +8,7 @@ const optionalId = z.union([z.literal(""), z.uuid()]).default("");
 
 export const settingsInputSchema = z.object({
   presentationJson: presentationJsonSchema,
+  customContactsJson: customContactLinksJsonSchema,
   name: z.string().trim().min(1).max(200), shortName: z.string().trim().min(1).max(100),
   headline: z.string().trim().min(1).max(500), introduction: z.string().trim().min(1).max(5000), biography: optionalText(20_000),
   webFocusTitle: optionalText(120).default("Web Development"), webFocusDescription: optionalText(1000).default("Responsive interfaces, full-stack applications, and smooth user experiences."),

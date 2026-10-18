@@ -1,3 +1,4 @@
+import { customContactLinksSchema } from "../contact/custom-links";
 import { ideaRecordSchema } from "../ideas/schema";
 import { presentationSchema } from "../settings/presentation";
 import { z } from "zod";
@@ -9,6 +10,7 @@ const publication = timestamps.extend({ status: z.enum(["draft", "published"]).d
 const month = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 
 export const profileSchema = publication.extend({
+  customContacts: customContactLinksSchema.default([]),
   key: z.literal("owner"), name: text, shortName: text, introduction: contentText,
   university: text.optional(), degree: text.optional(), country: text.optional(), city: text.optional(),
   publicEmail: z.email().optional(), github: webUrl.optional(), linkedin: webUrl.optional(),

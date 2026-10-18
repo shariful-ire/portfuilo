@@ -612,3 +612,13 @@ README documents the new settings, Messages and Ideas workflows and repeatable v
 - Studio background/hover and footer tint now follow configured accent tokens instead of hardcoded cyan. Existing reduced-motion behavior retained.
 - Read bundled Next.js CSS guide before changes. Lint and production build, including TypeScript, passed. Prior desktop/mobile browser verification applies to the earlier layout; these final CSS refinements were not separately browser-tested.
 - No new configuration, dependencies, data mutations or deployment. Next: owner reviews the updated local design; external PDF delivery configuration remains pending from the upload audit.
+
+## Dynamic contact links (2026-10-18)
+
+- Added an admin Settings editor for up to 30 title/HTTPS-link rows, with add/edit/remove and keyboard-accessible reorder buttons. Save uses the existing authorized settings endpoint, transaction and layout cache invalidation. No new public mutation endpoints.
+- Typed customContacts array persists in the owner profile; older records default to an empty list. JSON is only form transport, matching existing settings architecture. Public Contact/footer merge validated custom links with existing channels. Floating messaging retains its specialized channels.
+- Server validation normalizes scheme-less domains, rejects unsafe schemes/credentials/control characters and validates titles/counts. Labels render as React text.
+- Saved the supplied LinkedIn and Facebook links in the actual owner profile, preserving other fields and checking the previous updatedAt to avoid overwriting concurrent edits. Database readback plus a fresh loadSettingsForm/validation/contactActions read verified both correct URLs. No other profile content changed.
+- Checks: standalone typecheck, 102 tests and production build passed. No Google-authenticated browser editor flow was performed. README updated; no new configuration/indexes/dependencies. No deployment.
+- Next: use Dashboard > Settings > Additional contact links, then Save and publish settings. Deploy the new application code separately for hosted use.
+- Lint also completed with exit code 0; the first run was slow in the restricted sandbox.

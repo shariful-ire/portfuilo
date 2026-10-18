@@ -15,6 +15,7 @@ export async function loadSettingsForm() {
       if (key in p) input[key] = String(p[key as keyof typeof p] ?? "");
       else if (!["siteTitle", "siteDescription", "sharingMediaId", "presentationJson", "webFocusTitle", "webFocusDescription", "hardwareFocusTitle", "hardwareFocusDescription"].includes(key)) input[key] = "";
     }
+    input.customContactsJson = JSON.stringify(p.customContacts);
     input.headline = p.headline ?? settings?.heroText ?? settingsDefaults.headline;
   }
   if (settings) { const s = siteSettingsSchema.parse(settings); if (s.presentation) input.presentationJson = JSON.stringify(s.presentation); input.siteTitle = s.title; input.siteDescription = s.description; input.sharingMediaId = s.sharingMediaId ?? ""; }
@@ -44,6 +45,7 @@ export async function saveSettings(input: SettingsInput) {
     const now = new Date();
     const profile = profileSchema.parse({
       _id: previousProfile?._id ?? "11111111-1111-4111-8111-111111111111", createdAt: previousProfile?.createdAt ?? now, updatedAt: now, key: "owner", status: "published", displayOrder: 0,
+      customContacts: JSON.parse(data.customContactsJson),
       name: data.name, shortName: data.shortName, headline: data.headline, introduction: data.introduction,
       webFocusTitle: data.webFocusTitle, webFocusDescription: data.webFocusDescription, hardwareFocusTitle: data.hardwareFocusTitle, hardwareFocusDescription: data.hardwareFocusDescription,
       biography: optional(data.biography), university: optional(data.university), degree: optional(data.degree), department: optional(data.department), city: optional(data.city), country: optional(data.country),

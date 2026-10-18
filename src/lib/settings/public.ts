@@ -16,6 +16,7 @@ export const getPublicSettings = cache(async () => {
         if (key in profile) data[key] = String(profile[key as keyof typeof profile] ?? "");
         else if (!["siteTitle", "siteDescription", "sharingMediaId", "presentationJson", "webFocusTitle", "webFocusDescription", "hardwareFocusTitle", "hardwareFocusDescription"].includes(key)) data[key] = "";
       }
+      data.customContactsJson = JSON.stringify(profile.customContacts ?? []);
       data.headline = profile.headline ?? settings?.heroText ?? settingsDefaults.headline;
     }
     if (settings) { if (settings.presentation) data.presentationJson = JSON.stringify(settings.presentation); data.siteTitle = settings.title; data.siteDescription = settings.description; data.sharingMediaId = settings.sharingMediaId ?? ""; }

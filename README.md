@@ -432,3 +432,11 @@ Certificate image/PDF, project thumbnail/gallery, post cover, profile photo/CV/s
 The shared uploader confirms the authenticated PUT response and updates the library directly. A later media-list request is no longer required to acknowledge a successful upload. Manual refresh locks editing while in progress. Images and PDFs remain separate selectable types; other media are preserved when uploading either type.
 
 Live provider verification on 2026-10-10: temporary PNG upload/public delivery passed (HTTP 200), PDF upload passed but public PDF delivery returned HTTP 401. Both test assets were deleted. In Cloudinary Console, open Settings > Security and enable **Allow delivery of PDF and ZIP files**, then retest a PDF link. See [Cloudinary PDF delivery documentation](https://cloudinary.com/documentation/pdf_optimization). Provider checks do not verify the Google-authenticated dashboard save/publish flow or Vercel deployment limits.
+
+### Dynamic contact links
+
+Open Dashboard > Settings > Additional contact links. Add a title and website/app profile URL, use Move up/down to set order, or Remove to delete a row. Press **Save and publish settings** to persist all changes. Bare domains such as www.example.com/profile receive https:// automatically; executable schemes, plain HTTP and URLs containing credentials are rejected on the server. Up to 30 custom links are supported. Existing email/WhatsApp/Telegram fields retain their specialized messaging behavior.
+
+Custom links appear beside built-in channels in the homepage Contact section and footer. They do not automatically become chat channels in the floating messaging menu. Empty lists hide custom links. Existing profile records without custom contacts remain compatible. No new environment variables or database indexes are required.
+
+The owner's supplied LinkedIn profile and Facebook profile were saved to MongoDB on 2026-10-18 and read back successfully. The new dynamic editor/public rendering requires the updated application code to be deployed for hosted use.

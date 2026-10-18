@@ -1,3 +1,4 @@
+import { readCustomContacts } from "./custom-links";
 import { z } from "zod";
 export const contactEmail = z.string().trim().max(254).pipe(z.email()).transform((value) => { const at = value.lastIndexOf("@"); return value.slice(0, at) + value.slice(at).toLowerCase(); });
 export const whatsappValue = z.string().trim().max(40).transform((value) => { const cleaned = value.replace(/[ ()-]/g, "").replace(/^00/, "+"); return cleaned && !cleaned.startsWith("+") ? `+${cleaned}` : cleaned; }).pipe(z.string().regex(/^\+[1-9]\d{6,14}$/, "Use a full international number, including country code"));
@@ -9,8 +10,8 @@ function social(host: string, path: RegExp) { return z.string().trim().max(2000)
 export const githubValue = social("github.com", /^\/[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?(?:\/[a-zA-Z0-9_.-]+)?\/?$/);
 export const linkedinValue = social("linkedin.com", /^\/in\/[\p{L}\p{N}_-]+\/?$/u);
 export function optionalContact(schema: z.ZodType<string, string>) { return z.string().trim().pipe(z.union([z.literal(""), schema])).default(""); }
-export type ContactValues = { publicEmail?: string; whatsapp?: string; telegram?: string; github?: string; linkedin?: string };
-export type ContactAction = { channel: "email" | "whatsapp" | "telegram" | "github" | "linkedin"; label: string; href: string };
+export type ContactValues = { publicEmail?: string; whatsapp?: string; telegram?: string; github?: string; linkedin?: string; customContactsJson?: string };
+export type ContactAction = { channel: "email" | "whatsapp" | "telegram" | "github" | "linkedin" | "custom"; label: string; href: string };
 export function emailHref(value: string, subject = "Portfolio enquiry") {
  const email = contactEmail.parse(value); return `mailto:${encodeURIComponent(email).replace(/%40/g, "@")}?subject=${encodeURIComponent(subject.replace(/[\r\n]/g, " "))}`;
 }
@@ -21,5 +22,6 @@ export function contactActions(values: ContactValues, message = "Hello Shariful!
  const linkedin = linkedinValue.safeParse(values.linkedin); if (linkedin.success) actions.push({ channel: "linkedin", label: "LinkedIn", href: linkedin.data });
  const whatsapp = whatsappValue.safeParse(values.whatsapp); if (whatsapp.success) actions.push({ channel: "whatsapp", label: "WhatsApp", href: `https://wa.me/${whatsapp.data.slice(1)}?text=${encodeURIComponent(message)}` });
  const telegram = telegramValue.safeParse(values.telegram); if (telegram.success) actions.push({ channel: "telegram", label: "Telegram", href: `https://t.me/${encodeURIComponent(telegram.data)}` });
+ for (const link of readCustomContacts(values.customContactsJson)) { if (!actions.some((action) => action.href.replace(/\/$/, "") === link.url.replace(/\/$/, ""))) actions.push({ channel: "custom", label: link.title, href: link.url }); }
  return actions;
 }
